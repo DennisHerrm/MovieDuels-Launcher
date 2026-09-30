@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MovieDuels launcher: WPF on .NET Framework 4.8 (part of Windows 10/11, so players need no runtime
+     install). Builds to a single exe, MovieDuels-Launcher.exe, with all art and sound inside it. -->
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E728816E-1AA0-4891-9417-87B3BDA60741}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MovieDuelsLauncher</RootNamespace>
+    <AssemblyName>MovieDuels-Launcher</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
+    <Deterministic>true</Deterministic>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <ApplicationIcon>Assets\MovieDuels-Launcher.ico</ApplicationIcon>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LauncherSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <!-- The team's art (launcher-files), under its own names: replace a file and rebuild to change the look. -->
+  <ItemGroup>
+    <Resource Include="Assets\MovieDuels-Launcher.ico" />
+    <Resource Include="Assets\Images\Background Panel.png" />
+    <Resource Include="Assets\Images\Play Background.png" />
+    <Resource Include="Assets\Images\Singleplayer Glow.png" />
+    <Resource Include="Assets\Images\Multiplayer Glow.png" />
+    <Resource Include="Assets\Images\Play Panel.png" />
+    <Resource Include="Assets\Images\Logo Glow.png" />
+    <Resource Include="Assets\Images\Info Panel.png" />
+    <Resource Include="Assets\Icons\Settings.png" />
+    <Resource Include="Assets\Icons\ModDB.png" />
+    <Resource Include="Assets\Icons\Discord.png" />
+    <Resource Include="Assets\Icons\YouTube.png" />
+    <Resource Include="Assets\Icons\JKHub.png" />
+    <Resource Include="Assets\Icons\Nexus.png" />
+    <Resource Include="Assets\Audio\Music.mp3" />
+    <Resource Include="Assets\Audio\button1.wav" />
+    <Resource Include="Assets\Audio\menuroam.wav" />
+    <Resource Include="Assets\Audio\esc.wav" />
+  </ItemGroup>
+  <!-- Not used yet (no download / update feature): kept with the project, not built into the exe. -->
+  <ItemGroup>
+    <None Include="Assets\Images\Download Button.png" />
+    <None Include="Assets\Images\Download Ready Button.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

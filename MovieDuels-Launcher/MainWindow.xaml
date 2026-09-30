@@ -1,0 +1,284 @@
+<!--
+	MovieDuels launcher window.
+
+	The team's design (launcher-files, 1920x1080 layers) shown at 1088x612: the MovieDuels logo between two
+	bars of link buttons, Vader on the left and Kylo Ren / Rey on the right, and a bottom bar with
+	SINGLEPLAYER MODE and MULTIPLAYER MODE either side of the emblem. Hovering a mode fades in its glow layer.
+
+	The window has no border and is transparent: its shape (rounded corners) is the art's own alpha.
+	All positions are in window units (1920x1080 art pixels * 1088/1920):
+	  top bars: x 30..325 and 762..1058, y 57..84; bottom bar: x 132..955, y 544..572;
+	  emblem: centre 544,558; info card: x 37..1052, y 125..511
+-->
+<Window x:Class="MovieDuelsLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MovieDuels"
+        Width="1088" Height="612"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Icon="Assets/MovieDuels-Launcher.ico"
+        UseLayoutRounding="True" SnapsToDevicePixels="True"
+        RenderOptions.BitmapScalingMode="HighQuality"
+        TextOptions.TextRenderingMode="Grayscale"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        Closed="Window_Closed">
+
+	<Window.Resources>
+		<!-- colours from the art -->
+		<SolidColorBrush x:Key="WhiteText" Color="#F9F9F9" />
+		<SolidColorBrush x:Key="GoldText" Color="#FFCC66" />
+		<SolidColorBrush x:Key="Gold" Color="#E6FDB22A" />
+		<SolidColorBrush x:Key="GoldBright" Color="#FFD678" />
+		<FontFamily x:Key="LabelFont">Palatino Linotype, Georgia, Times New Roman</FontFamily>
+
+		<DropShadowEffect x:Key="TextShadow" Color="Black" ShadowDepth="1.5" BlurRadius="2" Opacity="0.7" />
+		<DropShadowEffect x:Key="GoldGlow" Color="#FFAA28" ShadowDepth="0" BlurRadius="12" Opacity="1" />
+
+		<!-- A text button on one of the art's bars: white, gold with a glow under the mouse. -->
+		<Style x:Key="TextButton" TargetType="Button">
+			<Setter Property="FontFamily" Value="{StaticResource LabelFont}" />
+			<Setter Property="FontSize" Value="20" />
+			<Setter Property="Foreground" Value="{StaticResource WhiteText}" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Focusable" Value="False" />
+			<EventSetter Event="MouseEnter" Handler="MenuButton_MouseEnter" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid Background="Transparent">
+							<ContentPresenter x:Name="Text" HorizontalAlignment="Center" VerticalAlignment="Center"
+							                  RecognizesAccessKey="False" Effect="{StaticResource TextShadow}" />
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Foreground" Value="{StaticResource GoldText}" />
+								<Setter TargetName="Text" Property="Effect" Value="{StaticResource GoldGlow}" />
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter TargetName="Text" Property="RenderTransform">
+									<Setter.Value>
+										<TranslateTransform Y="1" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- An icon button in the top bars: the content is the icon image; brighter, bigger and glowing under the mouse. -->
+		<Style x:Key="IconButton" TargetType="Button">
+			<Setter Property="Width" Value="32" />
+			<Setter Property="Height" Value="32" />
+			<Setter Property="Canvas.Top" Value="54.5" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Focusable" Value="False" />
+			<EventSetter Event="MouseEnter" Handler="MenuButton_MouseEnter" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid Background="Transparent">
+							<ContentPresenter x:Name="Icon" Width="24" Height="24" Opacity="0.82"
+							                  HorizontalAlignment="Center" VerticalAlignment="Center"
+							                  RenderTransformOrigin="0.5,0.5" />
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="Icon" Property="Opacity" Value="1" />
+								<Setter TargetName="Icon" Property="Effect" Value="{StaticResource GoldGlow}" />
+								<Setter TargetName="Icon" Property="RenderTransform">
+									<Setter.Value>
+										<ScaleTransform ScaleX="1.12" ScaleY="1.12" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter TargetName="Icon" Property="RenderTransform">
+									<Setter.Value>
+										<ScaleTransform ScaleX="1.0" ScaleY="1.0" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter TargetName="Icon" Property="Opacity" Value="0.35" />
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- A bar like the art's (dark fill, thin grey edge): the options page buttons. -->
+		<Style x:Key="BarButton" TargetType="Button">
+			<Setter Property="FontFamily" Value="{StaticResource LabelFont}" />
+			<Setter Property="FontSize" Value="19" />
+			<Setter Property="Foreground" Value="{StaticResource WhiteText}" />
+			<Setter Property="Height" Value="38" />
+			<Setter Property="Margin" Value="0,0,0,12" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Focusable" Value="False" />
+			<EventSetter Event="MouseEnter" Handler="MenuButton_MouseEnter" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="Bar" CornerRadius="9" Background="#EB140A14" BorderBrush="#8A8A8A" BorderThickness="1.5">
+							<ContentPresenter x:Name="Text" HorizontalAlignment="Center" VerticalAlignment="Center"
+							                  RecognizesAccessKey="False" Effect="{StaticResource TextShadow}" />
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Foreground" Value="{StaticResource GoldText}" />
+								<Setter TargetName="Bar" Property="Background" Value="#EB301C28" />
+								<Setter TargetName="Bar" Property="BorderBrush" Value="#DCA03C" />
+								<Setter TargetName="Text" Property="Effect" Value="{StaticResource GoldGlow}" />
+							</Trigger>
+							<Trigger Property="IsPressed" Value="True">
+								<Setter TargetName="Text" Property="RenderTransform">
+									<Setter.Value>
+										<TranslateTransform Y="1" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- The round window buttons (music, minimise, close): the content is a 22x22 drawing in the button's colour. -->
+		<Style x:Key="WindowButton" TargetType="Button">
+			<Setter Property="Width" Value="22" />
+			<Setter Property="Height" Value="22" />
+			<Setter Property="Canvas.Top" Value="16" />
+			<Setter Property="Foreground" Value="{StaticResource Gold}" />
+			<Setter Property="Focusable" Value="False" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Grid>
+							<Ellipse Fill="#96000000" Stroke="{TemplateBinding Foreground}" StrokeThickness="2" />
+							<ContentPresenter />
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Foreground" Value="{StaticResource GoldBright}" />
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="WindowButtonMark" TargetType="Path">
+			<Setter Property="Stroke" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+			<Setter Property="StrokeThickness" Value="1.5" />
+			<Setter Property="StrokeLineJoin" Value="Round" />
+		</Style>
+	</Window.Resources>
+
+	<!-- anything that is not a button drags the window -->
+	<Grid x:Name="Root" MouseLeftButtonDown="Root_MouseLeftButtonDown">
+
+		<!-- The team's Background Panel is glass (81% opaque): this black backing in the same rounded shape, just
+		     inside the gold outline, makes the window solid like the old launcher. Remove it for the glass look. -->
+		<Border Background="Black" CornerRadius="34.5" Margin="2.3,4.6,1.2,4" UseLayoutRounding="False" />
+
+		<!-- the art, bottom layer first -->
+		<Image Source="Assets/Images/Background Panel.png" Stretch="Fill" />
+		<Image Source="Assets/Images/Play Background.png" Stretch="Fill" />
+		<Image x:Name="SingleplayerGlow" Source="Assets/Images/Singleplayer Glow.png" Stretch="Fill" Opacity="0" />
+		<Image x:Name="MultiplayerGlow" Source="Assets/Images/Multiplayer Glow.png" Stretch="Fill" Opacity="0" />
+		<Image Source="Assets/Images/Play Panel.png" Stretch="Fill" />
+		<Image Source="Assets/Images/Logo Glow.png" Stretch="Fill" />
+
+		<!-- main page: the buttons on the art's bars -->
+		<Canvas x:Name="MainPage">
+			<!-- left top bar -->
+			<Button Style="{StaticResource IconButton}" Canvas.Left="72" Click="Options_Click" ToolTip="Options">
+				<Image Source="Assets/Icons/Settings.png" />
+			</Button>
+			<Button Style="{StaticResource IconButton}" Canvas.Left="161" Click="Link_Click" ToolTip="ModDB"
+			        Tag="https://www.moddb.com/mods/movie-duels">
+				<Image Source="Assets/Icons/ModDB.png" />
+			</Button>
+			<Button Style="{StaticResource TextButton}" Canvas.Left="217" Canvas.Top="58" Width="100" Height="26" FontSize="19"
+			        Click="Link_Click" Content="HELP"
+			        Tag="https://www.moddb.com/mods/movie-duels/tutorials" />
+
+			<!-- right top bar -->
+			<Button Style="{StaticResource IconButton}" Canvas.Left="801" Click="Link_Click" ToolTip="Discord"
+			        Tag="https://discord.com/invite/PhQPy7j">
+				<Image Source="Assets/Icons/Discord.png" />
+			</Button>
+			<Button Style="{StaticResource IconButton}" Canvas.Left="865" Click="Link_Click" ToolTip="YouTube"
+			        Tag="https://www.youtube.com/@MovieDuels">
+				<Image Source="Assets/Icons/YouTube.png" />
+			</Button>
+			<Button Style="{StaticResource IconButton}" Canvas.Left="929" Click="Link_Click" ToolTip="JKHub"
+			        Tag="https://jkhub.org/files/file/3860-star-wars-movie-duels/">
+				<Image Source="Assets/Icons/JKHub.png" />
+			</Button>
+			<Button Style="{StaticResource IconButton}" Canvas.Left="993" Click="Link_Click" ToolTip="Nexus Mods"
+			        Tag="https://www.nexusmods.com/starwarsjediknightjediacademy/mods/45">
+				<Image Source="Assets/Icons/Nexus.png" />
+			</Button>
+
+			<!-- bottom bar, either side of the emblem -->
+			<Button x:Name="SingleplayerButton" Style="{StaticResource TextButton}"
+			        Canvas.Left="140" Canvas.Top="544" Width="360" Height="29"
+			        Click="Singleplayer_Click" MouseEnter="ModeButton_MouseChanged" MouseLeave="ModeButton_MouseChanged"
+			        Content="SINGLEPLAYER MODE" />
+			<Button x:Name="MultiplayerButton" Style="{StaticResource TextButton}"
+			        Canvas.Left="588" Canvas.Top="544" Width="360" Height="29"
+			        Click="Multiplayer_Click" MouseEnter="ModeButton_MouseChanged" MouseLeave="ModeButton_MouseChanged"
+			        Content="MULTIPLAYER MODE" />
+
+			<TextBlock x:Name="VersionText" Canvas.Left="30" Canvas.Top="578" FontFamily="Segoe UI" FontSize="11"
+			           Foreground="#96C8C8C8" IsHitTestVisible="False" Text="Update 9" />
+		</Canvas>
+
+		<!-- options page: the team's info card over the dimmed art -->
+		<Grid x:Name="OptionsPage" Visibility="Collapsed">
+			<!-- the dimmer has the art's shape, so it does not fill the rounded corners -->
+			<Rectangle Fill="Black" Opacity="0.43">
+				<Rectangle.OpacityMask>
+					<ImageBrush ImageSource="Assets/Images/Background Panel.png" />
+				</Rectangle.OpacityMask>
+			</Rectangle>
+			<Image Source="Assets/Images/Info Panel.png" Stretch="Fill" />
+			<StackPanel Width="360" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,176,0,0">
+				<TextBlock Text="OPTIONS" FontFamily="{StaticResource LabelFont}" FontSize="28" Height="40" Margin="0,0,0,20"
+				           Foreground="{StaticResource GoldText}" Effect="{StaticResource GoldGlow}"
+				           HorizontalAlignment="Center" IsHitTestVisible="False" />
+				<Button x:Name="RendererButton" Style="{StaticResource BarButton}" Click="Renderer_Click" />
+				<Button x:Name="DisplayButton" Style="{StaticResource BarButton}" Click="Display_Click" />
+				<Button x:Name="AnimationsButton" Style="{StaticResource BarButton}" Click="Animations_Click" />
+				<Button Style="{StaticResource BarButton}" Click="OptionsBack_Click" Content="BACK" />
+			</StackPanel>
+		</Grid>
+
+		<!-- window buttons, on top of both pages -->
+		<Canvas>
+			<Button Style="{StaticResource WindowButton}" Canvas.Left="978" Click="Music_Click" ToolTip="Music">
+				<Canvas Width="22" Height="22">
+					<Path Style="{StaticResource WindowButtonMark}" Data="M5.5,9 L8.5,9 L12,6 L12,16 L8.5,13 L5.5,13 Z" />
+					<Path x:Name="MusicOnMark" Style="{StaticResource WindowButtonMark}"
+					      Data="M14,8.5 A3.5,3.5 0 0 1 14,13.5 M15.5,6 A6.5,6.5 0 0 1 15.5,16" />
+					<Path x:Name="MusicOffMark" Style="{StaticResource WindowButtonMark}" Visibility="Collapsed"
+					      Data="M14,9 L18,13 M18,9 L14,13" />
+				</Canvas>
+			</Button>
+			<Button Style="{StaticResource WindowButton}" Canvas.Left="1006" Click="Minimise_Click" ToolTip="Minimise">
+				<Canvas Width="22" Height="22">
+					<Path Style="{StaticResource WindowButtonMark}" StrokeThickness="2" Data="M6,11 L16,11" />
+				</Canvas>
+			</Button>
+			<Button Style="{StaticResource WindowButton}" Canvas.Left="1034" Click="Close_Click" ToolTip="Close">
+				<Canvas Width="22" Height="22">
+					<Path Style="{StaticResource WindowButtonMark}" StrokeThickness="2" Data="M6.5,6.5 L15.5,15.5 M15.5,6.5 L6.5,15.5" />
+				</Canvas>
+			</Button>
+		</Canvas>
+	</Grid>
+</Window>
