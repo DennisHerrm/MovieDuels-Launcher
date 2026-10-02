@@ -16,8 +16,10 @@ namespace MovieDuelsLauncher
 	//
 	// - SINGLEPLAYER MODE / MULTIPLAYER MODE start MovieDuels-SP.x86_64.exe / MovieDuels-MP.x86_64.exe
 	//   from the launcher's folder, passing the OPTIONS as "+set" values, and close the launcher.
-	// - The gear opens the OPTIONS page on the info card: Renderer, Display, Animations
-	//   (remembered by LauncherSettings).
+	//   Multiplayer needs Update 9: on Update 8 the button only says it is coming soon.
+	// - The gear opens the OPTIONS page on the info card: Renderer, Display, and Animations, or Controller on
+	//   Update 8, which has no animation choice (remembered by LauncherSettings). Which update the game's
+	//   assets are is read from them the way the game does it (MdUpdate).
 	// - The other icons and HELP open web pages in the browser (each button's Tag in the XAML).
 	public partial class MainWindow : Window
 	{
@@ -29,6 +31,13 @@ namespace MovieDuelsLauncher
 
 		readonly string folder; // where the launcher (and the game exes) are
 		readonly LauncherSettings settings;
+		readonly int mdUpdate;  // the MovieDuels update of the game's assets (8, 9, ...)
+
+		// the animation choice (g_ActivateAnimationStyle) came with Update 9
+		bool HasAnimationChoice => mdUpdate >= 9;
+
+		// multiplayer is played with Update 9 and later
+		bool HasMultiplayer => mdUpdate >= 9;
 
 		// menu sounds (the in-game menu's own); a newer one cuts off the one still playing
 		readonly SoundPlayer clickSound;
@@ -43,8 +52,14 @@ namespace MovieDuelsLauncher
 		{
 			folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			settings = new LauncherSettings(folder);
+			mdUpdate = MdUpdate.Detect(folder);
 
 			InitializeComponent();
+
+			VersionText.Text = "Update " + mdUpdate;
+			BuildText.Text = AutoVersion.VersionString;
+			AnimationsButton.Visibility = HasAnimationChoice ? Visibility.Visible : Visibility.Collapsed;
+			ControllerButton.Visibility = HasAnimationChoice ? Visibility.Collapsed : Visibility.Visible;
 
 			clickSound = LoadSound("Assets/Audio/button1.wav");
 			hoverSound = LoadSound("Assets/Audio/menuroam.wav");
@@ -157,6 +172,7 @@ namespace MovieDuelsLauncher
 			RendererButton.Content = settings.Rend2 ? "RENDERER: REND2" : "RENDERER: VANILLA";
 			DisplayButton.Content = settings.Windowed ? "DISPLAY: WINDOWED" : "DISPLAY: FULLSCREEN";
 			AnimationsButton.Content = settings.MasterAnimations ? "ANIMATIONS: MASTER" : "ANIMATIONS: CLASSIC";
+			ControllerButton.Content = settings.Controller ? "CONTROLLER: ON" : "CONTROLLER: OFF";
 		}
 
 		void ShowMusicButton()
@@ -205,6 +221,12 @@ namespace MovieDuelsLauncher
 			OptionChanged();
 		}
 
+		void Controller_Click(object sender, RoutedEventArgs e)
+		{
+			settings.Controller = !settings.Controller;
+			OptionChanged();
+		}
+
 		void OptionChanged()
 		{
 			PlaySfx(clickSound);
@@ -233,9 +255,16 @@ namespace MovieDuelsLauncher
 			string args = "+set cl_renderer " + renderer;
 			args += settings.Rend2 ? " +set com_rend2 1" : " +set com_rend2 0";
 			args += settings.Windowed ? " +set r_fullscreen 0" : " +set r_fullscreen 1";
-			if (!multiplayer)
+			if (HasAnimationChoice)
 			{
-				args += settings.MasterAnimations ? " +set g_ActivateAnimationStyle 1" : " +set g_ActivateAnimationStyle 0";
+				if (!multiplayer)
+				{
+					args += settings.MasterAnimations ? " +set g_ActivateAnimationStyle 1" : " +set g_ActivateAnimationStyle 0";
+				}
+			}
+			else
+			{
+				args += settings.Controller ? " +set in_joystick 1" : " +set in_joystick 0";
 			}
 
 			try
@@ -266,6 +295,13 @@ namespace MovieDuelsLauncher
 
 		void Multiplayer_Click(object sender, RoutedEventArgs e)
 		{
+			if (!HasMultiplayer)
+			{
+				PlaySfx(clickSound);
+				MessageBox.Show(this, "Multiplayer is not available yet for Update " + mdUpdate + ".\n\nComing soon!",
+					"MovieDuels", MessageBoxButton.OK, MessageBoxImage.Information);
+				return;
+			}
 			Play(true);
 		}
 

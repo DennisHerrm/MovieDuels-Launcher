@@ -235,7 +235,9 @@
 			        Content="MULTIPLAYER MODE" />
 
 			<TextBlock x:Name="VersionText" Canvas.Left="30" Canvas.Top="578" FontFamily="Segoe UI" FontSize="11"
-			           Foreground="#96C8C8C8" IsHitTestVisible="False" Text="Update 9" />
+			           Foreground="#96C8C8C8" IsHitTestVisible="False" Text="Update 9" /> <!-- set from the game's assets -->
+			<TextBlock x:Name="BuildText" Canvas.Right="30" Canvas.Top="578" FontFamily="Segoe UI" FontSize="11"
+			           Foreground="#96C8C8C8" IsHitTestVisible="False" /> <!-- the launcher's build (AutoVersion.cs) -->
 		</Canvas>
 
 		<!-- options page: the team's info card over the dimmed art -->
@@ -253,7 +255,9 @@
 				           HorizontalAlignment="Center" IsHitTestVisible="False" />
 				<Button x:Name="RendererButton" Style="{StaticResource BarButton}" Click="Renderer_Click" />
 				<Button x:Name="DisplayButton" Style="{StaticResource BarButton}" Click="Display_Click" />
+				<!-- Update 9 and later: the animations; Update 8 (no animation choice): the controller -->
 				<Button x:Name="AnimationsButton" Style="{StaticResource BarButton}" Click="Animations_Click" />
+				<Button x:Name="ControllerButton" Style="{StaticResource BarButton}" Click="Controller_Click" Visibility="Collapsed" />
 				<Button Style="{StaticResource BarButton}" Click="OptionsBack_Click" Content="BACK" />
 			</StackPanel>
 		</Grid>
