@@ -15,8 +15,7 @@ namespace MovieDuelsLauncher
 
 		public bool Rend2;
 		public bool Windowed;
-		public bool MasterAnimations; // singleplayer only: g_ActivateAnimationStyle (Update 9 and later)
-		public bool Controller;       // in_joystick (shown instead of the animations on Update 8)
+		public bool Controller;       // in_joystick
 		public bool Music = true;     // launcher background music (speaker button)
 
 		readonly string iniPath;
@@ -59,7 +58,6 @@ namespace MovieDuelsLauncher
 		{
 			Rend2 = GetPrivateProfileIntW(Section, "Rend2", 0, iniPath) != 0;
 			Windowed = GetPrivateProfileIntW(Section, "Windowed", 0, iniPath) != 0;
-			MasterAnimations = GetPrivateProfileIntW(Section, "MasterAnimations", 0, iniPath) != 0;
 			Controller = GetPrivateProfileIntW(Section, "Controller", 0, iniPath) != 0;
 			Music = GetPrivateProfileIntW(Section, "Music", 1, iniPath) != 0;
 		}
@@ -68,7 +66,6 @@ namespace MovieDuelsLauncher
 		{
 			WritePrivateProfileStringW(Section, "Rend2", Rend2 ? "1" : "0", iniPath);
 			WritePrivateProfileStringW(Section, "Windowed", Windowed ? "1" : "0", iniPath);
-			WritePrivateProfileStringW(Section, "MasterAnimations", MasterAnimations ? "1" : "0", iniPath);
 			WritePrivateProfileStringW(Section, "Controller", Controller ? "1" : "0", iniPath);
 			WritePrivateProfileStringW(Section, "Music", Music ? "1" : "0", iniPath);
 		}

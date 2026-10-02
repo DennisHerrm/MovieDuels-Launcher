@@ -15,18 +15,18 @@ Put `MovieDuels-Launcher.exe` in the MovieDuels game folder, next to `MovieDuels
 | --- | --- |
 | SINGLEPLAYER MODE | starts `MovieDuels-SP.x86_64.exe` and closes the launcher |
 | MULTIPLAYER MODE | starts `MovieDuels-MP.x86_64.exe` and closes the launcher (Update 9 and later; on Update 8 it says multiplayer is coming soon) |
-| Gear | the options page: Renderer (Vanilla / Rend2), Display (Fullscreen / Windowed), and Animations (Classic / Master, singleplayer only) on Update 9 or Controller (On / Off) on Update 8 |
+| Gear | the options page: Renderer (Vanilla / Rend2), Display (Fullscreen / Windowed) and Controller (On / Off) |
 | ModDB, HELP, Discord, YouTube, JKHub, Nexus | open the mod's pages in the browser |
 | Speaker, –, × | music on / off, minimise, close (Esc closes too) |
 
 The options are passed to the game as `+set` values (`cl_renderer`, `com_rend2`, `r_fullscreen`,
-`g_ActivateAnimationStyle` or `in_joystick`) and remembered in `Documents\My Games\MovieDuels\MovieDuels-Launcher.ini`.
+`in_joystick`) and remembered in `Documents\My Games\MovieDuels\MovieDuels-Launcher.ini`. The animation
+style (`g_ActivateAnimationStyle`, Update 9) is set in the game's own menu.
 
 The launcher reads which MovieDuels update the game's assets are the way the game does: the singleplayer
 main menu (`ui/main.menu`, from the last pk3 of the `MD` folder that has one) sets it with
-`uiScript "mdUpdate" "9"`; without that line it is Update 8. Update 8 has no animation choice
-(`g_ActivateAnimationStyle` came with Update 9), so there the options page shows the controller switch
-instead. The update is also shown at the bottom left of the window.
+`uiScript "mdUpdate" "9"`; without that line it is Update 8. The update is shown at the bottom left of the
+window, and multiplayer is only started on Update 9 and later.
 
 The launcher's own build is shown at the bottom right, from `MovieDuels-Launcher\AutoVersion.cs`
 (like the game's `AutoVersion.h`); change it there for each release.

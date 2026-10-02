@@ -255,9 +255,8 @@
 				           HorizontalAlignment="Center" IsHitTestVisible="False" />
 				<Button x:Name="RendererButton" Style="{StaticResource BarButton}" Click="Renderer_Click" />
 				<Button x:Name="DisplayButton" Style="{StaticResource BarButton}" Click="Display_Click" />
-				<!-- Update 9 and later: the animations; Update 8 (no animation choice): the controller -->
-				<Button x:Name="AnimationsButton" Style="{StaticResource BarButton}" Click="Animations_Click" />
-				<Button x:Name="ControllerButton" Style="{StaticResource BarButton}" Click="Controller_Click" Visibility="Collapsed" />
+				<!-- gamepad / joystick input (in_joystick) -->
+				<Button x:Name="ControllerButton" Style="{StaticResource BarButton}" Click="Controller_Click" />
 				<Button Style="{StaticResource BarButton}" Click="OptionsBack_Click" Content="BACK" />
 			</StackPanel>
 		</Grid>
