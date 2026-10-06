@@ -24,6 +24,10 @@ namespace MovieDuelsLauncher
     {
         private const string SPExe = "MovieDuels-SP.x86_64.exe";
         private const string MPExe = "MovieDuels-MP.x86_64.exe";
+        // Release builds of the game only start when this is set on their process (shared/sys/sys_main.cpp
+        // Sys_RequireLauncher: MD_LAUNCHER_ENV / MD_LAUNCHER_TOKEN); keep the two the same.
+        private const string LauncherEnv = "MOVIEDUELS_LAUNCHER";
+        private const string LauncherToken = "md-launcher-7f3a9c21";
 
         private const double MusicVolume = 0.6;
         private static readonly TimeSpan FadeTime = TimeSpan.FromMilliseconds(180); // the glow layers
@@ -248,7 +252,9 @@ namespace MovieDuelsLauncher
 
             try
             {
-                Process.Start(new ProcessStartInfo(exe, args) { WorkingDirectory = folder, UseShellExecute = false })?.Dispose();
+                var startInfo = new ProcessStartInfo(exe, args) { WorkingDirectory = folder, UseShellExecute = false };
+                startInfo.EnvironmentVariables[LauncherEnv] = LauncherToken; // lets a release build of the game start
+                Process.Start(startInfo)?.Dispose();
                 return true;
             }
             catch (Exception)
