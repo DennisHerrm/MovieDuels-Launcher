@@ -27,13 +27,17 @@ namespace MovieDuelsLauncher
     {
         private const string SPExe = "MovieDuels-SP.x86_64.exe";
         private const string MPExe = "MovieDuels-MP.x86_64.exe";
+
         // the mod folder (fs_game) next to the exes, and the dedicated server batch file in it (it does "cd .." itself, so
         // it runs from the mod folder)
         private const string ModFolder = "MD";
+
         private const string ServerBat = "Start MovieDuels-MP-FFA-Server.bat";
+
         // Release builds of the game only start when this is set on their process (shared/sys/sys_main.cpp
         // Sys_RequireLauncher: MD_LAUNCHER_ENV / MD_LAUNCHER_TOKEN); keep the two the same.
         private const string LauncherEnv = "MOVIEDUELS_LAUNCHER";
+
         private const string LauncherToken = "md-launcher-7f3a9c21";
 
         private const double MusicVolume = 0.6;
