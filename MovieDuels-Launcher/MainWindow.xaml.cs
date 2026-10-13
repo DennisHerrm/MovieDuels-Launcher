@@ -13,10 +13,13 @@ namespace MovieDuelsLauncher
 {
     // The launcher window (layout and looks: MainWindow.xaml).
     //
-    // - SINGLEPLAYER MODE / MULTIPLAYER MODE start MovieDuels-SP.x86_64.exe / MovieDuels-MP.x86_64.exe
-    //   from the launcher's folder, passing the OPTIONS as "+set" values, and close the launcher.
-    //   Multiplayer needs Update 9: on Update 8 the button only says it is coming soon.
-    // - The gear opens the OPTIONS page on the info card: Renderer, Display and Controller (remembered by
+    // - SINGLEPLAYER MODE starts MovieDuels-SP.x86_64.exe from the launcher's folder, passing the OPTIONS as "+set"
+    //   values, and closes the launcher. MULTIPLAYER MODE opens the MULTIPLAYER page on the info card:
+    //   START MULTIPLAYER starts MovieDuels-MP.x86_64.exe the same way, START SERVER runs
+    //   "Start MovieDuels-MP-FFA-Server.bat" from the MD folder in its own console (the launcher stays open, so the
+    //   game can be started next to join it). Multiplayer needs Update 9: on Update 8 the button only says it is
+    //   coming soon.
+    // - The gear opens the OPTIONS page on the info card: Renderer, Display, Resolution (read from and written to the game's own configs) and Controller (remembered by
     //   LauncherSettings). Which update the game's assets are is read from them the way the game does it
     //   (MdUpdate).
     // - The other icons and HELP open web pages in the browser (each button's Tag in the XAML).
@@ -24,6 +27,10 @@ namespace MovieDuelsLauncher
     {
         private const string SPExe = "MovieDuels-SP.x86_64.exe";
         private const string MPExe = "MovieDuels-MP.x86_64.exe";
+        // the mod folder (fs_game) next to the exes, and the dedicated server batch file in it (it does "cd .." itself, so
+        // it runs from the mod folder)
+        private const string ModFolder = "MD";
+        private const string ServerBat = "Start MovieDuels-MP-FFA-Server.bat";
         // Release builds of the game only start when this is set on their process (shared/sys/sys_main.cpp
         // Sys_RequireLauncher: MD_LAUNCHER_ENV / MD_LAUNCHER_TOKEN); keep the two the same.
         private const string LauncherEnv = "MOVIEDUELS_LAUNCHER";
@@ -171,6 +178,7 @@ namespace MovieDuelsLauncher
         {
             RendererButton.Content = settings.Rend2 ? "RENDERER: REND2" : "RENDERER: VANILLA";
             DisplayButton.Content = settings.Windowed ? "DISPLAY: WINDOWED" : "DISPLAY: FULLSCREEN";
+            ResolutionButton.Content = "RESOLUTION: " + settings.ResolutionText;
             ControllerButton.Content = settings.Controller ? "CONTROLLER: ON" : "CONTROLLER: OFF";
         }
 
@@ -182,11 +190,20 @@ namespace MovieDuelsLauncher
         }
 
         private bool OptionsOpen => OptionsPage.Visibility == Visibility.Visible;
+        private bool MultiplayerOpen => MultiplayerPage.Visibility == Visibility.Visible;
+        private bool CardOpen => OptionsOpen || MultiplayerOpen; // a page on the info card covers the main page
 
         private void SetOptionsOpen(bool open)
         {
             OptionsPage.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
-            MainPage.IsHitTestVisible = !open; // the main page's buttons are covered by the options page
+            MainPage.IsHitTestVisible = !CardOpen; // the main page's buttons are covered by the options page
+            UpdateGlow();
+        }
+
+        private void SetMultiplayerOpen(bool open)
+        {
+            MultiplayerPage.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
+            MainPage.IsHitTestVisible = !CardOpen; // the main page's buttons are covered by the multiplayer page
             UpdateGlow();
         }
 
@@ -205,13 +222,19 @@ namespace MovieDuelsLauncher
         private void Renderer_Click(object sender, RoutedEventArgs e)
         {
             settings.Rend2 = !settings.Rend2;
-            OptionChanged();
+            OptionChanged(true);
         }
 
         private void Display_Click(object sender, RoutedEventArgs e)
         {
             settings.Windowed = !settings.Windowed;
-            OptionChanged();
+            OptionChanged(true);
+        }
+
+        private void Resolution_Click(object sender, RoutedEventArgs e)
+        {
+            settings.NextResolution();
+            OptionChanged(true);
         }
 
         private void Controller_Click(object sender, RoutedEventArgs e)
@@ -220,10 +243,14 @@ namespace MovieDuelsLauncher
             OptionChanged();
         }
 
-        private void OptionChanged()
+        private void OptionChanged(bool gameConfig = false)
         {
             PlaySfx(clickSound);
             settings.Save();
+            if (gameConfig)
+            {
+                settings.SaveGameConfig(); // renderer, display, resolution: into the game's configs
+            }
             ShowOptions();
         }
 
@@ -241,13 +268,13 @@ namespace MovieDuelsLauncher
                 return false;
             }
 
-            // "+set" on the command line overrides the values in the configs
-            string renderer = multiplayer
-                ? (settings.Rend2 ? "MovieDuels-rdmp-rend2" : "MovieDuels-rdmp")
-                : (settings.Rend2 ? "MovieDuels-rdsp-rend2" : "MovieDuels-rdsp");
-            string args = "+set cl_renderer " + renderer;
-            args += settings.Rend2 ? " +set com_rend2 1" : " +set com_rend2 0";
-            args += settings.Windowed ? " +set r_fullscreen 0" : " +set r_fullscreen 1";
+            // "+set" on the command line overrides the values in the configs (they are the configs' own values unless the
+            // OPTIONS page changed them, and then it wrote them into the configs too)
+            string args = "";
+            foreach (var kv in settings.GameConfigValues(multiplayer))
+            {
+                args += (args.Length > 0 ? " " : "") + "+set " + kv.Key + " " + kv.Value;
+            }
             args += settings.Controller ? " +set in_joystick 1" : " +set in_joystick 0";
 
             try
@@ -280,14 +307,70 @@ namespace MovieDuelsLauncher
 
         private void Multiplayer_Click(object sender, RoutedEventArgs e)
         {
+            PlaySfx(clickSound);
             if (!HasMultiplayer)
             {
-                PlaySfx(clickSound);
                 MessageBox.Show(this, "Multiplayer is not available yet for Update " + mdUpdate + ".\n\nComing soon!",
                     "MovieDuels", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
+            SetMultiplayerOpen(true);
+        }
+
+        private void StartMultiplayer_Click(object sender, RoutedEventArgs e)
+        {
             Play(true);
+        }
+
+        private void StartServer_Click(object sender, RoutedEventArgs e)
+        {
+            PlaySfx(clickSound);
+            StartServer(); // the launcher stays open, to start the game and join
+        }
+
+        private void MultiplayerBack_Click(object sender, RoutedEventArgs e)
+        {
+            PlaySfx(backSound);
+            SetMultiplayerOpen(false);
+        }
+
+        // Runs the FFA dedicated server batch file from the MD folder in a console window of its own. The batch file
+        // restarts the server when it crashes; closing its window stops it.
+        private bool StartServer()
+        {
+            string modFolder = Path.Combine(folder, ModFolder);
+            string bat = Path.Combine(modFolder, ServerBat);
+            if (!File.Exists(bat))
+            {
+                MessageBox.Show(this, "Could not find " + bat + "\n\nThe launcher must be in the MovieDuels game folder.",
+                    "MovieDuels", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            string comspec = Environment.GetEnvironmentVariable("ComSpec");
+            if (string.IsNullOrEmpty(comspec))
+            {
+                comspec = Path.Combine(Environment.SystemDirectory, "cmd.exe");
+            }
+
+            try
+            {
+                // cmd /c ""<bat>"": the outer quotes are cmd's, the inner ones keep the spaces in the path. Started from
+                // a window program without a console, cmd gets a console window of its own.
+                var startInfo = new ProcessStartInfo(comspec, "/c \"\"" + bat + "\"\"")
+                {
+                    WorkingDirectory = modFolder,
+                    UseShellExecute = false
+                };
+                startInfo.EnvironmentVariables[LauncherEnv] = LauncherToken; // the server inherits it, as the game does
+                Process.Start(startInfo)?.Dispose();
+                return true;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(this, "Could not start " + bat, "MovieDuels", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
         }
 
         // A link button: the web address is the button's Tag.
@@ -327,8 +410,8 @@ namespace MovieDuelsLauncher
 
         private void UpdateGlow()
         {
-            Fade(SingleplayerGlow, !OptionsOpen && SingleplayerButton.IsMouseOver);
-            Fade(MultiplayerGlow, !OptionsOpen && MultiplayerButton.IsMouseOver);
+            Fade(SingleplayerGlow, !CardOpen && SingleplayerButton.IsMouseOver);
+            Fade(MultiplayerGlow, !CardOpen && MultiplayerButton.IsMouseOver);
         }
 
         private static void Fade(UIElement layer, bool show)
@@ -384,6 +467,11 @@ namespace MovieDuelsLauncher
             {
                 PlaySfx(backSound);
                 SetOptionsOpen(false);
+            }
+            else if (MultiplayerOpen)
+            {
+                PlaySfx(backSound);
+                SetMultiplayerOpen(false);
             }
             else
             {

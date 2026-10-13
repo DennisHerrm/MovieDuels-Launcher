@@ -255,13 +255,34 @@
 				           HorizontalAlignment="Center" IsHitTestVisible="False" />
 				<Button x:Name="RendererButton" Style="{StaticResource BarButton}" Click="Renderer_Click" />
 				<Button x:Name="DisplayButton" Style="{StaticResource BarButton}" Click="Display_Click" />
+				<!-- r_mode / r_customwidth / r_customheight of the game's config -->
+				<Button x:Name="ResolutionButton" Style="{StaticResource BarButton}" Click="Resolution_Click" />
 				<!-- gamepad / joystick input (in_joystick) -->
 				<Button x:Name="ControllerButton" Style="{StaticResource BarButton}" Click="Controller_Click" />
 				<Button Style="{StaticResource BarButton}" Click="OptionsBack_Click" Content="BACK" />
 			</StackPanel>
 		</Grid>
 
-		<!-- window buttons, on top of both pages -->
+		<!-- multiplayer page: the same info card, START MULTIPLAYER (the game) and START SERVER (the FFA dedicated server
+		     batch file in the MD folder; the launcher stays open to join it) -->
+		<Grid x:Name="MultiplayerPage" Visibility="Collapsed">
+			<Rectangle Fill="Black" Opacity="0.43">
+				<Rectangle.OpacityMask>
+					<ImageBrush ImageSource="Assets/Images/Background Panel.png" />
+				</Rectangle.OpacityMask>
+			</Rectangle>
+			<Image Source="Assets/Images/Info Panel.png" Stretch="Fill" />
+			<StackPanel Width="360" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,176,0,0">
+				<TextBlock Text="MULTIPLAYER" FontFamily="{StaticResource LabelFont}" FontSize="28" Height="40" Margin="0,0,0,20"
+				           Foreground="{StaticResource GoldText}" Effect="{StaticResource GoldGlow}"
+				           HorizontalAlignment="Center" IsHitTestVisible="False" />
+				<Button Style="{StaticResource BarButton}" Click="StartMultiplayer_Click" Content="START MULTIPLAYER" />
+				<Button Style="{StaticResource BarButton}" Click="StartServer_Click" Content="START SERVER" />
+				<Button Style="{StaticResource BarButton}" Click="MultiplayerBack_Click" Content="BACK" />
+			</StackPanel>
+		</Grid>
+
+		<!-- window buttons, on top of all the pages -->
 		<Canvas>
 			<Button Style="{StaticResource WindowButton}" Canvas.Left="978" Click="Music_Click" ToolTip="Music">
 				<Canvas Width="22" Height="22">
