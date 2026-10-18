@@ -4,6 +4,6 @@ namespace MovieDuelsLauncher
     // Shown in the lower right corner of the window.
     public static class AutoVersion
     {
-        public const string VersionString = "Day-15,Month-10,Year-26,BuildNum-09"; // build date
+        public const string VersionString = "Day-18,Month-10,Year-26,BuildNum-11"; // build date
     }
 }
