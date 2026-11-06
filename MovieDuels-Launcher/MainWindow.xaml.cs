@@ -1191,7 +1191,7 @@ namespace MovieDuelsLauncher
             {
                 if (group.Name.Length > 0)
                 {
-                    FaqList.Children.Add(new TextBlock { Text = group.Name.ToUpperInvariant(), Style = (Style)FindResource("Heading"), Margin = new Thickness(0, FaqList.Children.Count == 0 ? 4 : 18, 0, 2) });
+                    FaqList.Children.Add(new TextBlock { Text = group.Name.ToUpperInvariant(), Style = (Style)FindResource("Heading"), Margin = new Thickness(0, FaqList.Children.Count == 0 ? 0 : 18, 0, 2) });
                 }
                 foreach (var qa in group.Questions)
                 {
