@@ -832,6 +832,8 @@
 							<Button x:Name="CheckButton" Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Check installation" Click="CheckInstallation_Click" />
 							<Button Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Open folder" Click="OpenFolder_Click" />
 						</StackPanel>
+						<TextBlock Style="{StaticResource Heading}" Text="ADDONS" Margin="0,16,0,3" />
+						<StackPanel x:Name="AddonRows" />
 					</StackPanel>
 				</Grid>
 			</Border>

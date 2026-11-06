@@ -20,6 +20,52 @@ namespace MovieDuelsLauncher
         private const string ModFolder = "MD";
         private static readonly string[] BaseFiles = { "assets0.pk3", "assets1.pk3", "assets2.pk3", "assets3.pk3" };
 
+        // the optional add-ons SETTINGS lists under ADDONS: installed when all their files are there
+        public sealed class Addon
+        {
+            public string Name;
+            public string Page;    // where to get it
+            public string[] Files; // relative to the game folder
+        }
+
+        public static readonly Addon[] Addons =
+        {
+            new Addon
+            {
+                Name = "Jedi Outcast",
+                Page = "https://www.moddb.com/mods/movie-duels/downloads/movie-duels-jedi-outcast-addon",
+                // the add-on, and the player's own Jedi Outcast files copied into base under new names
+                Files = new[] { @"MD\r_outcastaddon.pk3", @"base\0-assets0.pk3", @"base\0-assets1.pk3", @"base\0-assets2.pk3", @"base\0-assets5.pk3" }
+            },
+            new Addon
+            {
+                Name = "TOTG S1: Dark Forces 2",
+                Page = "https://www.moddb.com/mods/movie-duels/downloads/tales-of-the-galaxy-dark-forces-ii-duels",
+                Files = new[] { @"MD\TOTG_DF2.pk3" }
+            }
+        };
+
+        // the files of an add-on that are not there
+        public static List<string> Missing(string folder, Addon addon)
+        {
+            var missing = new List<string>();
+            foreach (string file in addon.Files)
+            {
+                try
+                {
+                    if (!File.Exists(Path.Combine(folder, file)))
+                    {
+                        missing.Add(file);
+                    }
+                }
+                catch (Exception)
+                {
+                    missing.Add(file);
+                }
+            }
+            return missing;
+        }
+
         public sealed class Result
         {
             public bool JediAcademy;

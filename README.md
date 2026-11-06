@@ -48,7 +48,9 @@ the update as before. Check for updates (SETTINGS) turns this off.
 When the launcher then finds a newer update installed than the last time it ran, it checks the new files once:
 the bars either side of the emblem fill up, and SINGLEPLAYER and MULTIPLAYER come back when they are full. The
 check (also SETTINGS > Check installation) looks for Jedi Academy's `base\assets0-3.pk3` and opens every pk3 of
-the `MD` folder; it changes nothing.
+the `MD` folder; it changes nothing. Under ADDONS, SETTINGS shows whether the Jedi Outcast add-on
+(`MD\r_outcastaddon.pk3` and `base\0-assets0, 1, 2, 5.pk3`) and TOTG S1: Dark Forces 2 (`MD\TOTG_DF2.pk3`) are
+installed, with a link to their ModDB page (`FilesCheck.Addons`).
 
 ### News
 

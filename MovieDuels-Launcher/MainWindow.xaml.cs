@@ -1693,21 +1693,42 @@ namespace MovieDuelsLauncher
                 mod = "Update " + mdUpdate + " · " + pk3 + " pk3 files" + (lastCheck != null ? ", all can be read" : "");
             }
             AddInstallRow(state, "Movie Duels", mod);
+
+            // the optional add-ons: installed, partly there, or where to get them
+            AddonRows.Children.Clear();
+            foreach (FilesCheck.Addon addon in FilesCheck.Addons)
+            {
+                List<string> missing = FilesCheck.Missing(folder, addon);
+                if (missing.Count == 0)
+                {
+                    AddInstallRow("ok", addon.Name, "Installed", AddonRows, 150);
+                }
+                else if (missing.Count == addon.Files.Length)
+                {
+                    AddInstallRow("skip", addon.Name, "Not installed", AddonRows, 150, addon.Page);
+                }
+                else
+                {
+                    AddInstallRow("warn", addon.Name, "Missing " + string.Join(", ", missing), AddonRows, 150, addon.Page);
+                }
+            }
         }
 
-        private void AddInstallRow(string state, string name, string text)
+        // a row with a mark, a name and what was found; link: a "Get it" button that opens the page
+        private void AddInstallRow(string state, string name, string text, Panel rows = null, double nameWidth = 94, string link = null)
         {
             var row = new DockPanel { MinHeight = 30 };
-            Color color = state == "ok" ? Color.FromRgb(0x2F, 0xD6, 0xBF) : state == "warn" ? Color.FromRgb(0xFF, 0xCC, 0x66) : Color.FromRgb(0xFF, 0x8F, 0x7A);
+            Color color = state == "ok" ? Color.FromRgb(0x2F, 0xD6, 0xBF) : state == "warn" ? Color.FromRgb(0xFF, 0xCC, 0x66)
+                : state == "skip" ? Color.FromRgb(0xA0, 0xA0, 0xA5) : Color.FromRgb(0xFF, 0x8F, 0x7A);
             var mark = new Border
             {
                 Width = 18, Height = 18, CornerRadius = new CornerRadius(9), Margin = new Thickness(0, 0, 9, 0), VerticalAlignment = VerticalAlignment.Center,
                 Background = new SolidColorBrush(Color.FromArgb(0x30, color.R, color.G, color.B)),
-                Child = new TextBlock { Text = state == "ok" ? "✓" : state == "warn" ? "!" : "✕", FontSize = 11, FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(color), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
+                Child = new TextBlock { Text = state == "ok" ? "✓" : state == "warn" ? "!" : state == "skip" ? "–" : "✕", FontSize = 11, FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(color), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
             };
             row.Children.Add(mark);
             var title = Text(name, 12.5, (Brush)FindResource("WhiteText"), FontWeights.SemiBold);
-            title.Width = 94;
+            title.Width = nameWidth;
             title.VerticalAlignment = VerticalAlignment.Center;
             row.Children.Add(title);
             var detail = Text(text, 12, new SolidColorBrush(Color.FromRgb(0xB9, 0xB9, 0xBE)), FontWeights.Normal);
@@ -1715,8 +1736,15 @@ namespace MovieDuelsLauncher
             detail.TextTrimming = TextTrimming.CharacterEllipsis;
             detail.VerticalAlignment = VerticalAlignment.Center;
             detail.ToolTip = text;
+            if (link != null)
+            {
+                var get = new Button { Style = (Style)FindResource("LinkChip"), Content = "Get it ↗", ToolTip = link, Margin = new Thickness(8, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+                get.Click += (s, e) => OpenUrl(link);
+                DockPanel.SetDock(get, Dock.Right);
+                row.Children.Add(get);
+            }
             row.Children.Add(detail);
-            InstallRows.Children.Add(row);
+            (rows ?? InstallRows).Children.Add(row);
         }
 
         private async void CheckInstallation_Click(object sender, RoutedEventArgs e)
