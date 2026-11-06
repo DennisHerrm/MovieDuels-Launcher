@@ -18,7 +18,7 @@ The top bars hold the pages:
 | PLAY | the art, SINGLEPLAYER and MULTIPLAYER either side of the emblem |
 | NEWS | the team's articles, side by side: drag them, use the mouse wheel or the arrows; a click opens one |
 | ABOUT | links (ModDB, Nexus Mods, Discord, YouTube, JKHub), About the mod, FAQ, Team, and all Credits (searchable) |
-| SETTINGS | Renderer, Display, Resolution, Controller; the launcher's Music and Check for updates; the installation |
+| SETTINGS | Renderer, Display, Resolution, Controller; the launcher's Music and Check for updates; the installation and add-ons; Open folder (the game folder) and Open config folder (`Documents\My Games\MovieDuels\MD`) |
 
 | Button | What it does |
 | --- | --- |

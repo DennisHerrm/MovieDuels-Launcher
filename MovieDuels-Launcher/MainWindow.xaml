@@ -830,7 +830,10 @@
 						</StackPanel>
 						<StackPanel Orientation="Horizontal" Margin="0,8,0,0">
 							<Button x:Name="CheckButton" Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Check installation" Click="CheckInstallation_Click" />
-							<Button Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Open folder" Click="OpenFolder_Click" />
+							<Button Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Open folder" Click="OpenFolder_Click"
+							        ToolTip="The game folder" />
+							<Button Style="{StaticResource GhostButton}" Height="30" Padding="13,0" Content="Open config folder" Click="OpenConfigFolder_Click"
+							        ToolTip="Documents\My Games\MovieDuels\MD: the game's configs and saves" />
 						</StackPanel>
 						<TextBlock Style="{StaticResource Heading}" Text="ADDONS" Margin="0,16,0,3" />
 						<StackPanel x:Name="AddonRows" />

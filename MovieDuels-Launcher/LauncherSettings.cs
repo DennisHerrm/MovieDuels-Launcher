@@ -53,6 +53,9 @@ namespace MovieDuelsLauncher
         // the launcher's own files (news cache) live next to the ini
         public string DataFolder => Path.GetDirectoryName(iniPath);
 
+        // the game's own folder in Documents (configs, saves): My Games\MovieDuels\MD, or null without Documents
+        public string ConfigFolder => homeModFolder;
+
         private readonly string iniPath;
         private readonly string launcherFolder;
         private readonly string homeModFolder; // Documents\My Games\MovieDuels\MD, or null

@@ -1784,6 +1784,26 @@ namespace MovieDuelsLauncher
             CheckButton.IsEnabled = true;
         }
 
+        // Documents\My Games\MovieDuels\MD: the game writes it the first time it runs
+        private void OpenConfigFolder_Click(object sender, RoutedEventArgs e)
+        {
+            string config = settings.ConfigFolder;
+            if (config == null || !Directory.Exists(config))
+            {
+                PlaySfx(clickSound);
+                ShowToast("The config folder is made when the game runs for the first time.");
+                return;
+            }
+            PlaySfx(clickSound);
+            try
+            {
+                Process.Start(new ProcessStartInfo(config) { UseShellExecute = true })?.Dispose();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
         {
             PlaySfx(clickSound);
