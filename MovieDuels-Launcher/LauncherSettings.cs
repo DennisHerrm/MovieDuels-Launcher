@@ -10,10 +10,11 @@ namespace MovieDuelsLauncher
     // next to the game's own configs and saves (a game installed under Program Files can't write next
     // to its exe). Same file and keys as the earlier launchers, so players keep their options.
     //
-    // Renderer, display and resolution come from the game's own config: the one in Documents\My Games\MovieDuels\MD
-    // when it exists, else the one in the install's MD folder (MovieDuels-MP.cfg, else MovieDuels-SP.cfg). Changing
-    // them on the OPTIONS page writes them into both the SP and the MP config: only those "seta" lines are replaced
-    // (or added), every other line stays as it was.
+    // Renderer, display, resolution and controller come from the game's own config: the one in
+    // Documents\My Games\MovieDuels\MD when it exists, else the one in the install's MD folder. Of MovieDuels-SP.cfg and
+    // MovieDuels-MP.cfg it is the one written last, so a change made in the game (which writes its config when it
+    // quits) is what the launcher shows and passes on next time. Changing them on the SETTINGS page writes them into
+    // both the SP and the MP config: only those "seta" lines are replaced (or added), every other line stays as it was.
     public sealed class LauncherSettings
     {
         private const string IniName = "MovieDuels-Launcher.ini";
@@ -253,18 +254,31 @@ namespace MovieDuelsLauncher
             }
         }
 
-        // renderer, display and resolution from the game's config (MP's, else SP's); keeps the launcher's values when
-        // there is no config yet
+        // renderer, display, resolution and controller from the game's config that was written last (SP's or MP's: the
+        // game that ran last). Without a config (a new install) they start as Vanilla, windowed, desktop resolution and
+        // no controller.
         private void LoadGameConfig()
         {
-            List<string> lines = ReadLines(GameConfigPath(true));
+            string sp = GameConfigPath(false), mp = GameConfigPath(true);
+            bool mpFirst = LastWrite(mp) > LastWrite(sp);
+            List<string> lines = ReadLines(mpFirst ? mp : sp);
             if (lines.Count == 0)
             {
-                lines = ReadLines(GameConfigPath(false));
+                lines = ReadLines(mpFirst ? sp : mp);
             }
             if (lines.Count == 0)
             {
+                Rend2 = false;
+                Windowed = true;
+                ResWidth = 0;
+                ResHeight = 0;
+                Controller = false;
                 return;
+            }
+            string joystick = ReadCfgValue(lines, "in_joystick");
+            if (joystick != null)
+            {
+                Controller = ToInt(joystick) != 0;
             }
             string v = ReadCfgValue(lines, "cl_renderer");
             if (v != null)
@@ -300,6 +314,18 @@ namespace MovieDuelsLauncher
             }
         }
 
+        private static DateTime LastWrite(string path)
+        {
+            try
+            {
+                return File.Exists(path) ? File.GetLastWriteTimeUtc(path) : DateTime.MinValue;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
         private static int ToInt(string s)
         {
             return int.TryParse(s?.Trim(), out int n) ? n : 0;
@@ -315,7 +341,8 @@ namespace MovieDuelsLauncher
             {
                 new KeyValuePair<string, string>("cl_renderer", renderer),
                 new KeyValuePair<string, string>("com_rend2", Rend2 ? "1" : "0"),
-                new KeyValuePair<string, string>("r_fullscreen", Windowed ? "0" : "1")
+                new KeyValuePair<string, string>("r_fullscreen", Windowed ? "0" : "1"),
+                new KeyValuePair<string, string>("in_joystick", Controller ? "1" : "0")
             };
             if (ResWidth > 0)
             {

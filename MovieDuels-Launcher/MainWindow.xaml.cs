@@ -1630,7 +1630,7 @@ namespace MovieDuelsLauncher
             if (settings.Controller != on)
             {
                 settings.Controller = on;
-                OptionChanged();
+                OptionChanged(true);
             }
         }
 
@@ -1663,7 +1663,7 @@ namespace MovieDuelsLauncher
             settings.Save();
             if (gameConfig)
             {
-                settings.SaveGameConfig(); // renderer, display, resolution: into the game's configs
+                settings.SaveGameConfig(); // renderer, display, resolution, controller: into the game's configs
             }
             ShowOptions();
         }
@@ -1837,7 +1837,6 @@ namespace MovieDuelsLauncher
             {
                 args += (args.Length > 0 ? " " : "") + "+set " + kv.Key + " " + kv.Value;
             }
-            args += settings.Controller ? " +set in_joystick 1" : " +set in_joystick 0";
 
             try
             {

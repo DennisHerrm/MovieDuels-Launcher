@@ -29,7 +29,9 @@ The top bars hold the pages:
 | Speaker, –, × | music on / off, minimise, close (Esc goes back a page, and closes on PLAY) |
 
 The game options are passed to the game as `+set` values (`cl_renderer`, `com_rend2`, `r_fullscreen`, `r_mode`,
-`in_joystick`) and written into the game's own configs; the launcher's options are remembered in
+`in_joystick`) and written into the game's own configs. When the launcher opens, it reads them back from the
+config the game wrote last (`MovieDuels-SP.cfg` or `MovieDuels-MP.cfg`), so a change made in the game stays; without
+a config (a new install) they start as Vanilla, windowed, desktop resolution and no controller; the launcher's options are remembered in
 `Documents\My Games\MovieDuels\MovieDuels-Launcher.ini`. The animation style (`g_ActivateAnimationStyle`,
 Update 9) is set in the game's own menu.
 
