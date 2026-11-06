@@ -735,12 +735,23 @@ namespace MovieDuelsLauncher
             return new HashSet<string>(settings.SeenNews.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
+        private bool newsLoading;
+
         private async void LoadNews()
         {
+            if (newsLoading)
+            {
+                return;
+            }
+            newsLoading = true;
+            NewsEmpty.Text = "Looking for news...";
+            NewsRetry.Visibility = Visibility.Collapsed;
             string json = await Task.Run(() => Online.GetText("news.json"));
+            newsLoading = false;
             articles = Online.ParseNews(json);
             NewsEmpty.Text = json == null ? "Could not load the news. Is the PC online?" : "No news yet.";
-            NewsEmpty.Visibility = articles.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            NewsEmptyBox.Visibility = articles.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            NewsRetry.Visibility = articles.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             HashSet<string> seen = SeenNews();
             NewsCards.Children.Clear();
             foreach (Online.Article article in articles)
@@ -771,6 +782,13 @@ namespace MovieDuelsLauncher
                     }
                 }
             }
+        }
+
+        // no news (offline, or not published yet): look again
+        private void NewsRetry_Click(object sender, RoutedEventArgs e)
+        {
+            PlaySfx(clickSound);
+            LoadNews();
         }
 
         private Button NewsCard(Online.Article article, bool fresh)
@@ -980,7 +998,7 @@ namespace MovieDuelsLauncher
             {
                 return;
             }
-            NewsScroll.Cursor = Cursors.Hand;
+            NewsScroll.ClearValue(CursorProperty);
             if (NewsScroll.IsMouseCaptured)
             {
                 NewsScroll.ReleaseMouseCapture();
@@ -1094,6 +1112,16 @@ namespace MovieDuelsLauncher
         private readonly DispatcherTimer creditsTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(150) };
         private readonly List<KeyValuePair<Button, FrameworkElement>> creditsSections = new List<KeyValuePair<Button, FrameworkElement>>();
 
+        // a section of the credits list, for the heading that stays at the top while it is in view
+        private sealed class CreditsTitle
+        {
+            public FrameworkElement Block;
+            public string Title;
+            public List<KeyValuePair<FrameworkElement, string>> Groups;
+        }
+
+        private readonly List<CreditsTitle> creditsTitles = new List<CreditsTitle>();
+
         private TextBlock Text(string text, double size, Brush brush, FontWeight weight, bool label = false)
         {
             return new TextBlock
@@ -1112,7 +1140,7 @@ namespace MovieDuelsLauncher
             // the links
             var links = new[]
             {
-                new[] { "ModDB", "Download, guides, news", "https://www.moddb.com/mods/movie-duels", "ModDB" },
+                new[] { "ModDB", "Download", "https://www.moddb.com/mods/movie-duels", "ModDB" },
                 new[] { "Nexus Mods", "Download", "https://www.nexusmods.com/starwarsjediknightjediacademy/mods/45", "Nexus" },
                 new[] { "Discord", "Community and help", "https://discord.com/invite/PhQPy7j", "Discord" },
                 new[] { "YouTube", "Trailers and guides", "https://www.youtube.com/@MovieDuels", "YouTube" },
@@ -1337,6 +1365,8 @@ namespace MovieDuelsLauncher
             CreditsList.Children.Clear();
             CreditsNav.Children.Clear();
             creditsSections.Clear();
+            creditsTitles.Clear();
+            CreditsPinned.Visibility = Visibility.Collapsed;
             if (credits.Count == 0)
             {
                 CreditsList.Children.Add(new TextBlock { Text = "The credits are in MD\\ReadMe\\ReadMe_Credits.txt of the game folder, which wasn't found.", Style = (Style)FindResource("Body"), Foreground = (Brush)FindResource("DimText") });
@@ -1364,6 +1394,7 @@ namespace MovieDuelsLauncher
             {
                 TextContent.SectionLabel(section.Name, out string groupName, out string label);
                 var body = new StackPanel();
+                var groupHeadings = new List<KeyValuePair<FrameworkElement, string>>();
                 int count = 0;
                 foreach (TextContent.CreditGroup group in section.Groups)
                 {
@@ -1375,7 +1406,9 @@ namespace MovieDuelsLauncher
                     count += entries.Count(x => x.Note == null);
                     if (group.Name.Length > 0)
                     {
-                        body.Children.Add(new TextBlock { Text = group.Name.ToUpperInvariant(), Style = (Style)FindResource("Heading"), FontSize = 11, Margin = new Thickness(0, 12, 0, 7) });
+                        var groupHeading = new TextBlock { Text = group.Name.ToUpperInvariant(), Style = (Style)FindResource("Heading"), FontSize = 11, Margin = new Thickness(0, 12, 0, 7) };
+                        body.Children.Add(groupHeading);
+                        groupHeadings.Add(new KeyValuePair<FrameworkElement, string>(groupHeading, group.Name));
                     }
                     var grid = new UniformGrid { Columns = 3 };
                     foreach (TextContent.CreditEntry entry in entries)
@@ -1419,16 +1452,18 @@ namespace MovieDuelsLauncher
                     continue;
                 }
                 total += count;
+                string title = groupName == "Models / Skins" || groupName == "Weapons" ? groupName + ": " + label : label;
                 var heading = new Border
                 {
                     BorderBrush = (Brush)FindResource("Line"), BorderThickness = new Thickness(0, 0, 0, 1), Margin = new Thickness(0, 0, 0, 8), Padding = new Thickness(0, 6, 0, 7),
-                    Child = new TextBlock { Text = groupName == "Models / Skins" || groupName == "Weapons" ? groupName + ": " + label : label, FontFamily = (FontFamily)FindResource("LabelFont"), FontSize = 19, Foreground = (Brush)FindResource("GoldText") }
+                    Child = new TextBlock { Text = title, FontFamily = (FontFamily)FindResource("LabelFont"), FontSize = 19, Foreground = (Brush)FindResource("GoldText") }
                 };
                 var block = new StackPanel { Margin = new Thickness(0, 0, 0, 16) };
                 block.Children.Add(heading);
                 block.Children.Add(body);
                 CreditsList.Children.Add(block);
                 creditsSections.Add(new KeyValuePair<Button, FrameworkElement>(navButton, block));
+                creditsTitles.Add(new CreditsTitle { Block = block, Title = title, Groups = groupHeadings });
                 navButton.Click += (s, e) =>
                 {
                     PlaySfx(clickSound);
@@ -1468,17 +1503,13 @@ namespace MovieDuelsLauncher
                 var links = new WrapPanel { Margin = new Thickness(0, 5, 0, 0) };
                 foreach (string url in entry.Links.Where(u => u.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
                 {
-                    var link = new Button { Style = (Style)FindResource("GhostButton"), Height = 20, Padding = new Thickness(8, 0, 8, 0), FontSize = 11, Foreground = (Brush)FindResource("GoldBright"), Content = TextContent.LinkName(url) + " ↗", ToolTip = url, Margin = new Thickness(0, 0, 5, 0) };
+                    var link = new Button { Style = (Style)FindResource("LinkChip"), Content = TextContent.LinkName(url) + " ↗", ToolTip = url };
                     link.Click += (s, e) => OpenUrl(url);
                     links.Children.Add(link);
                 }
                 card.Children.Add(links);
             }
-            return new Border
-            {
-                Background = new SolidColorBrush(Color.FromArgb(0x09, 0xFF, 0xFF, 0xFF)), BorderBrush = (Brush)FindResource("Line"), BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(10), Padding = new Thickness(11, 9, 11, 9), Margin = new Thickness(0, 0, 8, 8), Child = card
-            };
+            return new Border { Style = (Style)FindResource("CreditCard"), Child = card };
         }
 
         private void MarkCreditsSection(Button current)
@@ -1489,22 +1520,50 @@ namespace MovieDuelsLauncher
             }
         }
 
-        // the section in view is marked in the list on the left
+        // the section in view is marked in the list on the left, and its heading (with the group in view) stays at the top
         private void CreditsScroll_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             if (e.VerticalChange == 0 || creditsSections.Count == 0)
             {
                 return;
             }
-            Button current = creditsSections[0].Key;
-            foreach (var section in creditsSections)
+            double offset = CreditsScroll.VerticalOffset;
+            int current = 0;
+            for (int i = 0; i < creditsSections.Count; i++)
             {
-                if (section.Value.TranslatePoint(new Point(0, 0), CreditsList).Y <= CreditsScroll.VerticalOffset + 6)
+                if (creditsSections[i].Value.TranslatePoint(new Point(0, 0), CreditsList).Y <= offset + 6)
                 {
-                    current = section.Key;
+                    current = i;
                 }
             }
-            MarkCreditsSection(current);
+            MarkCreditsSection(creditsSections[current].Key);
+
+            CreditsTitle section = creditsTitles[current];
+            double top = section.Block.TranslatePoint(new Point(0, 0), CreditsList).Y;
+            if (offset <= top + 2)
+            {
+                CreditsPinned.Visibility = Visibility.Collapsed; // its own heading is still in view
+                return;
+            }
+            string group = null;
+            foreach (var g in section.Groups)
+            {
+                if (g.Key.TranslatePoint(new Point(0, 0), CreditsList).Y <= offset + 40)
+                {
+                    group = g.Value;
+                }
+            }
+            CreditsPinnedText.Inlines.Clear();
+            CreditsPinnedText.Inlines.Add(new Run(section.Title));
+            if (group != null)
+            {
+                CreditsPinnedText.Inlines.Add(new Run("   ·   " + group.ToUpperInvariant())
+                {
+                    FontFamily = (FontFamily)FindResource("UiFont"), FontSize = 11, FontWeight = FontWeights.SemiBold,
+                    Foreground = (Brush)FindResource("DimText"), BaselineAlignment = BaselineAlignment.Center
+                });
+            }
+            CreditsPinned.Visibility = Visibility.Visible;
         }
 
         // ------------------------------------------------------------------------------------------

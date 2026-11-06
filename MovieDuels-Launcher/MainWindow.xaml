@@ -469,6 +469,46 @@
 			</Setter>
 		</Style>
 
+		<!-- a card in Credits: gold edge and a soft glow under the mouse -->
+		<Style x:Key="CreditCard" TargetType="Border">
+			<Setter Property="Background" Value="#09FFFFFF" />
+			<Setter Property="BorderBrush" Value="{StaticResource Line}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="10" />
+			<Setter Property="Padding" Value="11,9" />
+			<Setter Property="Margin" Value="0,0,8,8" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="#0FFFCC66" />
+					<Setter Property="BorderBrush" Value="#B3FFCC66" />
+					<Setter Property="Effect" Value="{StaticResource SoftGoldGlow}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+		<!-- a link on a credit card -->
+		<Style x:Key="LinkChip" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+			<Setter Property="Foreground" Value="{StaticResource GoldBright}" />
+			<Setter Property="Height" Value="21" />
+			<Setter Property="Padding" Value="8,0" />
+			<Setter Property="FontSize" Value="11" />
+			<Setter Property="Margin" Value="0,0,5,0" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border x:Name="Pill" CornerRadius="5" Background="#59000000" BorderBrush="{StaticResource Line2}" BorderThickness="1" Padding="{TemplateBinding Padding}">
+							<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="False" />
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="Pill" Property="BorderBrush" Value="{StaticResource GoldText}" />
+								<Setter TargetName="Pill" Property="Background" Value="#1FFFCC66" />
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
 		<!-- slim dark scroll bars and tooltips everywhere -->
 		<Style TargetType="ScrollBar">
 			<Setter Property="Width" Value="7" />
@@ -550,7 +590,7 @@
 			<!-- NEWS: the articles side by side; drag them, use the mouse wheel or the arrows -->
 			<Grid x:Name="NewsPage" Canvas.Left="4" Canvas.Top="116" Width="1080" Height="450" Visibility="Collapsed">
 				<ScrollViewer x:Name="NewsScroll" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
-				              CanContentScroll="False" Focusable="False" Cursor="Hand"
+				              CanContentScroll="False" Focusable="False"
 				              PreviewMouseLeftButtonDown="NewsScroll_MouseDown" PreviewMouseMove="NewsScroll_MouseMove"
 				              PreviewMouseLeftButtonUp="NewsScroll_MouseUp" LostMouseCapture="NewsScroll_LostCapture"
 				              PreviewMouseWheel="NewsScroll_MouseWheel" ScrollChanged="NewsScroll_ScrollChanged">
@@ -564,8 +604,12 @@
 					</ScrollViewer.OpacityMask>
 					<StackPanel x:Name="NewsCards" Orientation="Horizontal" Margin="28,0,10,0" />
 				</ScrollViewer>
-				<TextBlock x:Name="NewsEmpty" Style="{StaticResource Body}" Foreground="{StaticResource DimText}" HorizontalAlignment="Center"
-				           VerticalAlignment="Center" Text="Looking for news..." />
+				<StackPanel x:Name="NewsEmptyBox" HorizontalAlignment="Center" VerticalAlignment="Center">
+					<TextBlock x:Name="NewsEmpty" Style="{StaticResource Body}" Foreground="{StaticResource DimText}" HorizontalAlignment="Center"
+					           Text="Looking for news..." />
+					<Button x:Name="NewsRetry" Style="{StaticResource GhostButton}" HorizontalAlignment="Center" Margin="0,14,0,0" Padding="16,0"
+					        Content="Try again" Click="NewsRetry_Click" Visibility="Collapsed" />
+				</StackPanel>
 				<Button x:Name="NewsLeft" Style="{StaticResource GhostButton}" Width="42" Height="42" Padding="0" HorizontalAlignment="Left"
 				        VerticalAlignment="Top" Margin="8,204,0,0" Click="NewsLeft_Click" ToolTip="Previous articles">
 					<Path Data="M8,1 L2,7.5 L8,14" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="2.4"
@@ -657,6 +701,11 @@
 							<ScrollViewer x:Name="CreditsScroll" Grid.Column="2" VerticalScrollBarVisibility="Auto" ScrollChanged="CreditsScroll_ScrollChanged">
 								<StackPanel x:Name="CreditsList" Margin="0,0,10,300" />
 							</ScrollViewer>
+							<Border x:Name="CreditsPinned" Grid.Column="2" VerticalAlignment="Top" Margin="0,0,20,0" Padding="0,6,0,7" Background="#FF151518"
+							        BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Visibility="Collapsed" IsHitTestVisible="False">
+								<TextBlock x:Name="CreditsPinnedText" FontFamily="{StaticResource LabelFont}" FontSize="19" Foreground="{StaticResource GoldText}"
+								           TextTrimming="CharacterEllipsis" />
+							</Border>
 						</Grid>
 					</Grid>
 				</Grid>
