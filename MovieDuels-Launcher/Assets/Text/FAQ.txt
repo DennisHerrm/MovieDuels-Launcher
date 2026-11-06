@@ -43,7 +43,7 @@ A: To put it shortly, Jedi Academy's game engine was not built for large cluster
 Q: I can't play the game. It shows me the error message “Couldn't load default.cfg.”
 A: You’ve probably extracted/installed the files, into your “base” folder. This is the incorrect directory. The file has to be extracted into the “Gamedata” folder (or a GameData folder, if you have more than one). Also check the file path is correct and you don't have two GameData folders.
 
-Q: I'm getting an error message, stating "UI_ParseAnimFileSet: 4 == MAX_ANIM_FILES == 4", every time I try to run STAR WARS: Movie Duels.
+Q: I'm getting an error message, stating "UI_ParseAnimFileSet: 4 == MAX_ANIM_FILES == 4".
 A: It's likely that you've ran Jedi Academy, through Steam. The mod has to be to run, via the "MovieDuels.x86.exe" file. When you run Jedi Academy through the Steam application, it only loads the "normal" Jedi Academy engine that has the base/vanilla game's code. So, each character model will only have a max. of 4 animations (humanoids). If you want to run your copy of the STAR WARS: Movie Duels mod through Steam, you need to go to "ADD A GAME" > "Add a Non-Steam Game..." in the Steam program window, locate the \Steam\steamapps\common\Jedi Academy\GameData folder and add the "MovieDuels.x86". Once added, you can rename the shortcut in your Steam library, if you wish.
 
 Q: How do I win saber locks?

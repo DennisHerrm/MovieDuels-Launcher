@@ -12,7 +12,7 @@ Movie Duels Team
 - MasterJin - Mapper
 - Mikcz - Mapper, Modeller
 - RealygirlLP - Translator (German)
-- Tompa9 - Modeller, Scripter, Texture Artist, Translator (Czech)
+- Tompa9 - Modeller, Scripter, Translator (Czech)
 - Valzhar - Coder
 - WC3 Tutorial - Animator
 - Yeyo JK - Texture Artist
