@@ -25,6 +25,7 @@ namespace MovieDuelsLauncher
         public const string ContentUrl = "https://raw.githubusercontent.com/MovieDuels/MovieDuels-Launcher-News/main/";
 
         private const int TimeoutMs = 8000;
+        private static readonly TimeSpan RefreshTime = TimeSpan.FromMinutes(5);
 
         public static string CacheFolder; // set by the window; null: no cache
 
@@ -79,7 +80,11 @@ namespace MovieDuelsLauncher
                 return null;
             }
             string cached = CachePath(url);
-            if (preferCache && cached != null && File.Exists(cached))
+            // a file read less than 5 minutes ago comes from the cache: reopening the launcher again and again doesn't ask
+            // GitHub each time (which keeps its own copy for about as long anyway). A failed read isn't cached, so
+            // "Try again" still asks.
+            if (cached != null && File.Exists(cached)
+                && (preferCache || DateTime.UtcNow - File.GetLastWriteTimeUtc(cached) < RefreshTime))
             {
                 try
                 {

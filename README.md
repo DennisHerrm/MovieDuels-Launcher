@@ -57,7 +57,8 @@ installed, with a link to their ModDB page (`FilesCheck.Addons`).
 
 `news.json` in MovieDuels-Launcher-News lists the articles, newest first; each one is a small HTML file and a
 picture in its `news` folder. The NEWS button flashes while there are articles a player hasn't seen. What was read is kept in
-`Documents\My Games\MovieDuels\LauncherNews`, so the news also show offline. The news repository's README
+`Documents\My Games\MovieDuels\LauncherNews`, so the news also show offline; a file read less than 5 minutes
+ago comes from there, so opening the launcher again and again doesn't ask GitHub each time. The news repository's README
 explains the files; the address is `ContentUrl` in `MovieDuels-Launcher\Online.cs`.
 
 The launcher's build is shown at the bottom right, from `MovieDuels-Launcher\AutoVersion.cs`
