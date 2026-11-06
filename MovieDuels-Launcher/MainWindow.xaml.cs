@@ -1161,7 +1161,7 @@ namespace MovieDuelsLauncher
                 LinkRows.Children.Add(button);
             }
 
-            // About the mod
+            // About: the mod
             TextContent.AboutText about = TextContent.ParseAbout(ReadResourceText("Assets/Text/About.txt"));
             var top = new StackPanel();
             DockPanel.SetDock(top, Dock.Top);

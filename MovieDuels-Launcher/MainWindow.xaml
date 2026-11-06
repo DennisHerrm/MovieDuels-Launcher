@@ -657,7 +657,7 @@
 						<Border BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Margin="0,0,0,12">
 							<Grid>
 								<StackPanel Orientation="Horizontal">
-									<Button x:Name="TabMod" Style="{StaticResource TabButton}" Click="Tab_Click" Content="About the mod" Tag="on" />
+									<Button x:Name="TabMod" Style="{StaticResource TabButton}" Click="Tab_Click" Content="About" Tag="on" />
 									<Button x:Name="TabFaq" Style="{StaticResource TabButton}" Click="Tab_Click" Content="FAQ" />
 									<Button x:Name="TabTeam" Style="{StaticResource TabButton}" Click="Tab_Click" Content="Team" />
 									<Button x:Name="TabCredits" Style="{StaticResource TabButton}" Click="Tab_Click" Content="Credits" />
@@ -793,7 +793,7 @@
 								</Border>
 								<StackPanel VerticalAlignment="Center">
 									<TextBlock FontFamily="{StaticResource UiFont}" FontSize="14.5" FontWeight="SemiBold" Foreground="{StaticResource WhiteText}" Text="Music" />
-									<TextBlock FontFamily="{StaticResource UiFont}" FontSize="12" Foreground="{StaticResource DimText}" Text="Same as the speaker button at the top" />
+									<TextBlock FontFamily="{StaticResource UiFont}" FontSize="12" Foreground="{StaticResource DimText}" Text="Play background music" />
 								</StackPanel>
 							</DockPanel>
 						</Border>
