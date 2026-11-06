@@ -41,6 +41,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -65,7 +66,11 @@
     </Compile>
     <Compile Include="AutoVersion.cs" />
     <Compile Include="LauncherSettings.cs" />
+    <Compile Include="FilesCheck.cs" />
+    <Compile Include="HtmlText.cs" />
     <Compile Include="MdUpdate.cs" />
+    <Compile Include="Online.cs" />
+    <Compile Include="TextContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <!-- The team's art (launcher-files), under its own names: replace a file and rebuild to change the look. -->
@@ -77,8 +82,8 @@
     <Resource Include="Assets\Images\Multiplayer Glow.png" />
     <Resource Include="Assets\Images\Play Panel.png" />
     <Resource Include="Assets\Images\Logo Glow.png" />
-    <Resource Include="Assets\Images\Info Panel.png" />
-    <Resource Include="Assets\Icons\Settings.png" />
+    <Resource Include="Assets\Images\Download Button.png" />
+    <Resource Include="Assets\Images\Download Ready Button.png" />
     <Resource Include="Assets\Icons\ModDB.png" />
     <Resource Include="Assets\Icons\Discord.png" />
     <Resource Include="Assets\Icons\YouTube.png" />
@@ -88,11 +93,15 @@
     <Resource Include="Assets\Audio\button1.wav" />
     <Resource Include="Assets\Audio\menuroam.wav" />
     <Resource Include="Assets\Audio\esc.wav" />
+    <!-- the ABOUT page's texts: edit them like any text file and rebuild -->
+    <Resource Include="Assets\Text\About.txt" />
+    <Resource Include="Assets\Text\FAQ.txt" />
+    <Resource Include="Assets\Text\Team.txt" />
   </ItemGroup>
-  <!-- Not used yet (no download / update feature): kept with the project, not built into the exe. -->
+  <!-- Not used any more (the old OPTIONS card and its gear): kept with the project, not built into the exe. -->
   <ItemGroup>
-    <None Include="Assets\Images\Download Button.png" />
-    <None Include="Assets\Images\Download Ready Button.png" />
+    <None Include="Assets\Images\Info Panel.png" />
+    <None Include="Assets\Icons\Settings.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

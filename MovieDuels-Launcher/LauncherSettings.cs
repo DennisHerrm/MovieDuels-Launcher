@@ -10,10 +10,11 @@ namespace MovieDuelsLauncher
     // next to the game's own configs and saves (a game installed under Program Files can't write next
     // to its exe). Same file and keys as the earlier launchers, so players keep their options.
     //
-    // Renderer, display and resolution come from the game's own config: the one in Documents\My Games\MovieDuels\MD
-    // when it exists, else the one in the install's MD folder (MovieDuels-MP.cfg, else MovieDuels-SP.cfg). Changing
-    // them on the OPTIONS page writes them into both the SP and the MP config: only those "seta" lines are replaced
-    // (or added), every other line stays as it was.
+    // Renderer, display, resolution and controller come from the game's own config: the one in
+    // Documents\My Games\MovieDuels\MD when it exists, else the one in the install's MD folder. Of MovieDuels-SP.cfg and
+    // MovieDuels-MP.cfg it is the one written last, so a change made in the game (which writes its config when it
+    // quits) is what the launcher shows and passes on next time. Changing them on the SETTINGS page writes them into
+    // both the SP and the MP config: only those "seta" lines are replaced (or added), every other line stays as it was.
     public sealed class LauncherSettings
     {
         private const string IniName = "MovieDuels-Launcher.ini";
@@ -46,6 +47,15 @@ namespace MovieDuelsLauncher
         public bool Music = true;     // launcher background music (speaker button)
         public int ResWidth;          // 0 = desktop resolution
         public int ResHeight;
+        public bool CheckUpdates = true; // look for a new update (latest.json in MovieDuels-Launcher-News) when the launcher opens
+        public int LastUpdate;        // the update the launcher last saw installed (0 = never ran): a higher one gets checked
+        public string SeenNews = "";  // ids of the news articles already shown, comma separated (the NEWS button flashes for new ones)
+
+        // the launcher's own files (news cache) live next to the ini
+        public string DataFolder => Path.GetDirectoryName(iniPath);
+
+        // the game's own folder in Documents (configs, saves): My Games\MovieDuels\MD, or null without Documents
+        public string ConfigFolder => homeModFolder;
 
         private readonly string iniPath;
         private readonly string launcherFolder;
@@ -53,6 +63,9 @@ namespace MovieDuelsLauncher
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern uint GetPrivateProfileIntW(string section, string key, int fallback, string file);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint GetPrivateProfileStringW(string section, string key, string fallback, StringBuilder value, uint size, string file);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool WritePrivateProfileStringW(string section, string key, string value, string file);
@@ -94,6 +107,11 @@ namespace MovieDuelsLauncher
             Windowed = GetPrivateProfileIntW(Section, "Windowed", 0, iniPath) != 0;
             Controller = GetPrivateProfileIntW(Section, "Controller", 0, iniPath) != 0;
             Music = GetPrivateProfileIntW(Section, "Music", 1, iniPath) != 0;
+            CheckUpdates = GetPrivateProfileIntW(Section, "CheckUpdates", 1, iniPath) != 0;
+            LastUpdate = (int)GetPrivateProfileIntW(Section, "LastUpdate", 0, iniPath);
+            var seen = new StringBuilder(8192);
+            GetPrivateProfileStringW(Section, "SeenNews", "", seen, (uint)seen.Capacity, iniPath);
+            SeenNews = seen.ToString();
         }
 
         public void Save()
@@ -102,6 +120,9 @@ namespace MovieDuelsLauncher
             WritePrivateProfileStringW(Section, "Windowed", Windowed ? "1" : "0", iniPath);
             WritePrivateProfileStringW(Section, "Controller", Controller ? "1" : "0", iniPath);
             WritePrivateProfileStringW(Section, "Music", Music ? "1" : "0", iniPath);
+            WritePrivateProfileStringW(Section, "CheckUpdates", CheckUpdates ? "1" : "0", iniPath);
+            WritePrivateProfileStringW(Section, "LastUpdate", LastUpdate.ToString(), iniPath);
+            WritePrivateProfileStringW(Section, "SeenNews", SeenNews, iniPath);
         }
 
         // ------------------------------------------------------------------------------------------
@@ -233,18 +254,31 @@ namespace MovieDuelsLauncher
             }
         }
 
-        // renderer, display and resolution from the game's config (MP's, else SP's); keeps the launcher's values when
-        // there is no config yet
+        // renderer, display, resolution and controller from the game's config that was written last (SP's or MP's: the
+        // game that ran last). Without a config (a new install) they start as Vanilla, windowed, desktop resolution and
+        // no controller.
         private void LoadGameConfig()
         {
-            List<string> lines = ReadLines(GameConfigPath(true));
+            string sp = GameConfigPath(false), mp = GameConfigPath(true);
+            bool mpFirst = LastWrite(mp) > LastWrite(sp);
+            List<string> lines = ReadLines(mpFirst ? mp : sp);
             if (lines.Count == 0)
             {
-                lines = ReadLines(GameConfigPath(false));
+                lines = ReadLines(mpFirst ? sp : mp);
             }
             if (lines.Count == 0)
             {
+                Rend2 = false;
+                Windowed = true;
+                ResWidth = 0;
+                ResHeight = 0;
+                Controller = false;
                 return;
+            }
+            string joystick = ReadCfgValue(lines, "in_joystick");
+            if (joystick != null)
+            {
+                Controller = ToInt(joystick) != 0;
             }
             string v = ReadCfgValue(lines, "cl_renderer");
             if (v != null)
@@ -280,6 +314,18 @@ namespace MovieDuelsLauncher
             }
         }
 
+        private static DateTime LastWrite(string path)
+        {
+            try
+            {
+                return File.Exists(path) ? File.GetLastWriteTimeUtc(path) : DateTime.MinValue;
+            }
+            catch (Exception)
+            {
+                return DateTime.MinValue;
+            }
+        }
+
         private static int ToInt(string s)
         {
             return int.TryParse(s?.Trim(), out int n) ? n : 0;
@@ -295,7 +341,8 @@ namespace MovieDuelsLauncher
             {
                 new KeyValuePair<string, string>("cl_renderer", renderer),
                 new KeyValuePair<string, string>("com_rend2", Rend2 ? "1" : "0"),
-                new KeyValuePair<string, string>("r_fullscreen", Windowed ? "0" : "1")
+                new KeyValuePair<string, string>("r_fullscreen", Windowed ? "0" : "1"),
+                new KeyValuePair<string, string>("in_joystick", Controller ? "1" : "0")
             };
             if (ResWidth > 0)
             {
@@ -333,6 +380,23 @@ namespace MovieDuelsLauncher
             ResHeight = Resolutions[next, 1];
         }
 
-        public string ResolutionText => ResWidth > 0 ? ResWidth + " x " + ResHeight : "DESKTOP";
+        // the resolution before this one in the list
+        public void PreviousResolution()
+        {
+            int count = Resolutions.GetLength(0);
+            int previous = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (Resolutions[i, 0] == ResWidth && Resolutions[i, 1] == ResHeight)
+                {
+                    previous = (i + count - 1) % count;
+                    break;
+                }
+            }
+            ResWidth = Resolutions[previous, 0];
+            ResHeight = Resolutions[previous, 1];
+        }
+
+        public string ResolutionText => ResWidth > 0 ? ResWidth + " x " + ResHeight : "Desktop";
     }
 }
