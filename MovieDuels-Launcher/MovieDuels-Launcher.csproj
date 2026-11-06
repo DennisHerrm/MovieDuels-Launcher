@@ -100,6 +100,7 @@
   </ItemGroup>
   <!-- Not used any more (the old OPTIONS card and its gear): kept with the project, not built into the exe. -->
   <ItemGroup>
+    <Resource Include="Assets\Fonts\albertus-bold.ttf" />
     <None Include="Assets\Images\Info Panel.png" />
     <None Include="Assets\Icons\Settings.png" />
   </ItemGroup>

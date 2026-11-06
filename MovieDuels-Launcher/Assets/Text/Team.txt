@@ -4,7 +4,7 @@ Movie Duels Team
 
 - Mike7704 - Leader, Coder, Menus, Scripter
 - Chloe - Texture Artist
-- GP Channel - Mapper, Texture Artist
+- GP - Mapper, Texture Artist
 - Grimbord - Modeller
 - Jace Solaris - Coder
 - LangZ - Sound Editor

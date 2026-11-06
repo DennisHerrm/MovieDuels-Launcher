@@ -44,7 +44,7 @@
             <GradientStop Color="#FFDC8A" Offset="0" />
             <GradientStop Color="#F2AD36" Offset="1" />
         </LinearGradientBrush>
-        <FontFamily x:Key="LabelFont">Palatino Linotype, Georgia, Times New Roman</FontFamily>
+        <FontFamily x:Key="LabelFont">Assets/Fonts/albertus-bold.ttf#Albertus</FontFamily>
         <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
 
         <DropShadowEffect x:Key="TextShadow" Color="Black" ShadowDepth="1.5" BlurRadius="2" Opacity="0.7" />
@@ -665,10 +665,10 @@
                         <Border BorderBrush="{StaticResource Line}" BorderThickness="0,0,0,1" Margin="0,0,0,12">
                             <Grid>
                                 <StackPanel Orientation="Horizontal">
-                                    <Button x:Name="TabMod" Style="{StaticResource TabButton}" Click="Tab_Click" Content="About" Tag="on" />
+                                    <Button x:Name="TabMod" Style="{StaticResource TabButton}" Click="Tab_Click" Content="ABOUT" Tag="on" />
                                     <Button x:Name="TabFaq" Style="{StaticResource TabButton}" Click="Tab_Click" Content="FAQ" />
-                                    <Button x:Name="TabTeam" Style="{StaticResource TabButton}" Click="Tab_Click" Content="Team" />
-                                    <Button x:Name="TabCredits" Style="{StaticResource TabButton}" Click="Tab_Click" Content="Credits" />
+                                    <Button x:Name="TabTeam" Style="{StaticResource TabButton}" Click="Tab_Click" Content="TEAM" />
+                                    <Button x:Name="TabCredits" Style="{StaticResource TabButton}" Click="Tab_Click" Content="CREDITS" />
                                 </StackPanel>
                                 <!-- the credits search, on the tab row -->
                                 <StackPanel x:Name="CreditsHead" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="Collapsed">
@@ -878,10 +878,10 @@
 
         <!-- ======================================== top: pages, social, window ======================================== -->
         <Canvas>
-            <Button x:Name="NavPlay" Style="{StaticResource NavButton}" Canvas.Left="62" Width="100" Content="PLAY" Click="Nav_Click" Tag="on" />
-            <Button x:Name="NavNews" Style="{StaticResource NavButton}" Canvas.Left="178" Width="100" Content="NEWS" Click="Nav_Click" />
-            <Button x:Name="NavAbout" Style="{StaticResource NavButton}" Canvas.Left="790" Width="100" Content="ABOUT" Click="Nav_Click" />
-            <Button x:Name="NavSettings" Style="{StaticResource NavButton}" Canvas.Left="905" Width="120" Content="SETTINGS" Click="Nav_Click" />
+            <Button x:Name="NavPlay" Style="{StaticResource NavButton}" Canvas.Left="62" Width="100" Content="PLAY" Click="Nav_Click" Tag="on" HorizontalAlignment="Center" Canvas.Top="59" VerticalAlignment="Top" />
+            <Button x:Name="NavNews" Style="{StaticResource NavButton}" Canvas.Left="178" Width="100" Content="NEWS" Click="Nav_Click" HorizontalAlignment="Center" Canvas.Top="59" VerticalAlignment="Top" />
+            <Button x:Name="NavAbout" Style="{StaticResource NavButton}" Canvas.Left="790" Width="100" Content="ABOUT" Click="Nav_Click" HorizontalAlignment="Center" Canvas.Top="59" VerticalAlignment="Top" />
+            <Button x:Name="NavSettings" Style="{StaticResource NavButton}" Canvas.Left="905" Width="120" Content="SETTINGS" Click="Nav_Click" HorizontalAlignment="Center" Canvas.Top="59" VerticalAlignment="Top" />
 
             <Button Style="{StaticResource IconButton}" Canvas.Left="32" Click="Link_Click" ToolTip="ModDB" Tag="https://www.moddb.com/mods/movie-duels">
                 <Image Source="Assets/Icons/ModDB.png" />
