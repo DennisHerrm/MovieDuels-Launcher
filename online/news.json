@@ -1,0 +1,13 @@
+{
+  "articles": [
+    {
+      "id": "update-7",
+      "tag": "Update",
+      "date": "30 Dec 2025",
+      "title": "Update 7 is LIVE!",
+      "summary": "This new update brings new missions, characters, modes and more. Click here for more details.",
+      "image": "news/update7.jpg",
+      "file": "news/update7.html"
+    }
+  ]
+}

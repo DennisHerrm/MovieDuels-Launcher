@@ -46,6 +46,12 @@ namespace MovieDuelsLauncher
         public bool Music = true;     // launcher background music (speaker button)
         public int ResWidth;          // 0 = desktop resolution
         public int ResHeight;
+        public bool CheckUpdates = true; // look for a new update (online/latest.json) when the launcher opens
+        public int LastUpdate;        // the update the launcher last saw installed (0 = never ran): a higher one gets checked
+        public string SeenNews = "";  // ids of the news articles already shown, comma separated (the NEWS button flashes for new ones)
+
+        // the launcher's own files (news cache) live next to the ini
+        public string DataFolder => Path.GetDirectoryName(iniPath);
 
         private readonly string iniPath;
         private readonly string launcherFolder;
@@ -53,6 +59,9 @@ namespace MovieDuelsLauncher
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern uint GetPrivateProfileIntW(string section, string key, int fallback, string file);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        private static extern uint GetPrivateProfileStringW(string section, string key, string fallback, StringBuilder value, uint size, string file);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool WritePrivateProfileStringW(string section, string key, string value, string file);
@@ -94,6 +103,11 @@ namespace MovieDuelsLauncher
             Windowed = GetPrivateProfileIntW(Section, "Windowed", 0, iniPath) != 0;
             Controller = GetPrivateProfileIntW(Section, "Controller", 0, iniPath) != 0;
             Music = GetPrivateProfileIntW(Section, "Music", 1, iniPath) != 0;
+            CheckUpdates = GetPrivateProfileIntW(Section, "CheckUpdates", 1, iniPath) != 0;
+            LastUpdate = (int)GetPrivateProfileIntW(Section, "LastUpdate", 0, iniPath);
+            var seen = new StringBuilder(8192);
+            GetPrivateProfileStringW(Section, "SeenNews", "", seen, (uint)seen.Capacity, iniPath);
+            SeenNews = seen.ToString();
         }
 
         public void Save()
@@ -102,6 +116,9 @@ namespace MovieDuelsLauncher
             WritePrivateProfileStringW(Section, "Windowed", Windowed ? "1" : "0", iniPath);
             WritePrivateProfileStringW(Section, "Controller", Controller ? "1" : "0", iniPath);
             WritePrivateProfileStringW(Section, "Music", Music ? "1" : "0", iniPath);
+            WritePrivateProfileStringW(Section, "CheckUpdates", CheckUpdates ? "1" : "0", iniPath);
+            WritePrivateProfileStringW(Section, "LastUpdate", LastUpdate.ToString(), iniPath);
+            WritePrivateProfileStringW(Section, "SeenNews", SeenNews, iniPath);
         }
 
         // ------------------------------------------------------------------------------------------
@@ -333,6 +350,23 @@ namespace MovieDuelsLauncher
             ResHeight = Resolutions[next, 1];
         }
 
-        public string ResolutionText => ResWidth > 0 ? ResWidth + " x " + ResHeight : "DESKTOP";
+        // the resolution before this one in the list
+        public void PreviousResolution()
+        {
+            int count = Resolutions.GetLength(0);
+            int previous = 0;
+            for (int i = 0; i < count; i++)
+            {
+                if (Resolutions[i, 0] == ResWidth && Resolutions[i, 1] == ResHeight)
+                {
+                    previous = (i + count - 1) % count;
+                    break;
+                }
+            }
+            ResWidth = Resolutions[previous, 0];
+            ResHeight = Resolutions[previous, 1];
+        }
+
+        public string ResolutionText => ResWidth > 0 ? ResWidth + " x " + ResHeight : "Desktop";
     }
 }
