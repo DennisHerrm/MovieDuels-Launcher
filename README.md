@@ -40,7 +40,8 @@ window, and multiplayer is only started on Update 9 and later.
 
 ### Updates
 
-The launcher downloads nothing. When it opens it reads `online/latest.json` from this repository; when the
+The launcher downloads nothing. When it opens it reads `latest.json` from the public repository
+[MovieDuels-Launcher-News](https://github.com/MovieDuels/MovieDuels-Launcher-News); when the
 update there is newer than the installed one, the emblem glows red, a reminder shows above it and PLAY gets a
 dot on the other pages. The emblem's window lists what's new and opens ModDB or Nexus Mods, where players get
 the update as before. Check for updates (SETTINGS) turns this off.
@@ -54,9 +55,10 @@ installed, with a link to their ModDB page (`FilesCheck.Addons`).
 
 ### News
 
-`online/news.json` lists the articles, newest first; each one is a small HTML file and a picture in
-`online/news`. The NEWS button flashes while there are articles a player hasn't seen. What was read is kept in
-`Documents\My Games\MovieDuels\LauncherNews`, so the news also show offline. See `online/README.md`.
+`news.json` in MovieDuels-Launcher-News lists the articles, newest first; each one is a small HTML file and a
+picture in its `news` folder. The NEWS button flashes while there are articles a player hasn't seen. What was read is kept in
+`Documents\My Games\MovieDuels\LauncherNews`, so the news also show offline. The news repository's README
+explains the files; the address is `ContentUrl` in `MovieDuels-Launcher\Online.cs`.
 
 The launcher's build is shown at the bottom right, from `MovieDuels-Launcher\AutoVersion.cs`
 (like the game's `AutoVersion.h`); change it there for each release.
@@ -79,7 +81,7 @@ The exe is written to `MovieDuels-Launcher\bin\Release`.
   `Download Ready Button.png` are the red and teal emblem.
 - **Texts of ABOUT**: `MovieDuels-Launcher\Assets\Text` (`About.txt`, `FAQ.txt`, `Team.txt`); the format is
   explained at the top of each file. The credits come from the game's own `MD\ReadMe\ReadMe_Credits.txt`.
-- **News and updates**: the `online` folder of this repository; no new launcher needed.
+- **News and updates**: the MovieDuels-Launcher-News repository; no new launcher needed.
 - **Layout, colours, link addresses**: `MainWindow.xaml`. Each link button's address is its `Tag`.
 - **Game exe names, command line, options**: `MainWindow.xaml.cs` and `LauncherSettings.cs`.
 - The design's Background Panel is glass (81% opaque). The window is made solid by the black `Border`

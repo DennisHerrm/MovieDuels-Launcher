@@ -12,7 +12,7 @@ namespace MovieDuelsLauncher
     // A news article's HTML, shown as WPF text. Only the simple parts are used, so an article is quick to write and
     // nothing in it can run: <h2> <h3> <p> <p class="note"> <ul>/<ol> <li> <b>/<strong> <i>/<em> <a href> <br>
     // <img src>. Other tags are skipped (their text stays), <script> and <style> are dropped with their content.
-    // Links open in the browser; pictures come from the online folder like the article.
+    // Links open in the browser; pictures come from the news repository like the article.
     public static class HtmlText
     {
         private static readonly Regex Token = new Regex(@"<!--.*?-->|<(/?)([a-zA-Z][a-zA-Z0-9]*)([^>]*)>|([^<]+)", RegexOptions.Singleline);

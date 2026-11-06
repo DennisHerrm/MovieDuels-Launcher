@@ -28,7 +28,7 @@ namespace MovieDuelsLauncher
     //   MovieDuels-MP.x86_64.exe the same way, Start server runs "Start MovieDuels-MP-FFA-Server.bat" from the MD folder
     //   in its own console (the launcher stays open, so the game can be started next to join it). Multiplayer needs
     //   Update 9: before that the button says it is coming soon.
-    // - Updates: the launcher downloads nothing. It reads online/latest.json from its GitHub repo (Online); when that
+    // - Updates: the launcher downloads nothing. It reads latest.json from MovieDuels-Launcher-News (Online); when that
     //   update is newer than the installed one (MdUpdate), the emblem glows red and its window opens ModDB or Nexus
     //   Mods. When the launcher then sees a newer update installed than last time, it checks the new files once
     //   (FilesCheck) and the bars either side of the emblem fill up; SINGLEPLAYER and MULTIPLAYER come back when
@@ -1942,7 +1942,7 @@ namespace MovieDuelsLauncher
             OpenUrl((sender as FrameworkElement)?.Tag as string);
         }
 
-        // only web pages: a link from the online folder can't start anything else
+        // only web pages: a link from the news can't start anything else
         private void OpenUrl(string url)
         {
             if (string.IsNullOrEmpty(url) || !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))

@@ -46,7 +46,7 @@ namespace MovieDuelsLauncher
         public bool Music = true;     // launcher background music (speaker button)
         public int ResWidth;          // 0 = desktop resolution
         public int ResHeight;
-        public bool CheckUpdates = true; // look for a new update (online/latest.json) when the launcher opens
+        public bool CheckUpdates = true; // look for a new update (latest.json in MovieDuels-Launcher-News) when the launcher opens
         public int LastUpdate;        // the update the launcher last saw installed (0 = never ran): a higher one gets checked
         public string SeenNews = "";  // ids of the news articles already shown, comma separated (the NEWS button flashes for new ones)
 

@@ -10,8 +10,9 @@ using System.Windows.Media.Imaging;
 
 namespace MovieDuelsLauncher
 {
-    // What the team publishes for the launcher, read from the online folder of the launcher's GitHub repo
-    // (online/ in MovieDuels/MovieDuels-Launcher): editing a file there and pushing it is all it takes.
+    // What the team publishes for the launcher, read from the public repository MovieDuels/MovieDuels-Launcher-News
+    // (its own repository, so the launcher's code can stay private): editing a file there and pushing it is all it
+    // takes.
     //
     //   latest.json  the newest MovieDuels update and where to get it (the emblem glows red when it is newer than
     //                the installed one; the launcher downloads nothing, the buttons open ModDB / Nexus Mods)
@@ -21,7 +22,7 @@ namespace MovieDuelsLauncher
     // without a connection.
     public static class Online
     {
-        public const string ContentUrl = "https://raw.githubusercontent.com/MovieDuels/MovieDuels-Launcher/main/online/";
+        public const string ContentUrl = "https://raw.githubusercontent.com/MovieDuels/MovieDuels-Launcher-News/main/";
 
         private const int TimeoutMs = 8000;
 
@@ -44,11 +45,11 @@ namespace MovieDuelsLauncher
             public string Date;
             public string Title;
             public string Summary;
-            public string Image; // path in the online folder (or a full https address)
+            public string Image; // path in the news repository (or a full https address)
             public string File;  // the article's HTML
         }
 
-        // a path of the online folder as a web address (a full https address stays as it is)
+        // a path of the news repository as a web address (a full https address stays as it is)
         public static string Resolve(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -61,7 +62,7 @@ namespace MovieDuelsLauncher
             }
             if (path.StartsWith("http:", StringComparison.OrdinalIgnoreCase) || path.Contains(".."))
             {
-                return null; // only https, and nothing outside the online folder
+                return null; // only https, and nothing outside the news repository
             }
             return ContentUrl + path.TrimStart('/');
         }

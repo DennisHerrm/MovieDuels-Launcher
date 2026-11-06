@@ -14,7 +14,7 @@ namespace MovieDuelsLauncher
     //     half-copied download shows up
     //
     // A file list per update (name, size, checksum) would also find files that are out of date; the team can
-    // publish one in the online folder later.
+    // publish one in the news repository later.
     public static class FilesCheck
     {
         private const string ModFolder = "MD";
