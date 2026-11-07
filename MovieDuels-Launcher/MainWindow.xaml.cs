@@ -386,7 +386,7 @@ namespace MovieDuelsLauncher
             }
             else if (asked)
             {
-                ShowToast(found == null ? "Could not check for updates. Is the PC online?" : "Update " + mdUpdate + " is the newest. You're up to date.");
+                ShowToast(found == null ? "Failed to check for updates." : "Update " + mdUpdate + " is the latest. You're up to date.");
             }
         }
 
@@ -405,13 +405,13 @@ namespace MovieDuelsLauncher
                 VersionText.Inlines.Add(new Run("  ·  "));
                 VersionText.Inlines.Add(new Run(latest.Title + " available") { Foreground = (Brush)FindResource("GoldBright"), FontWeight = FontWeights.SemiBold });
             }
-            ChipText.Text = available ? latest.Title + " is out. Click to see what's new" : "";
+            ChipText.Text = available ? latest.Title + " is out! Click to see what's new." : "";
             Chip.Visibility = available && !chipDismissed && page == Page.Play && UpdateSheet.Visibility != Visibility.Visible
                 ? Visibility.Visible : Visibility.Collapsed;
             NavPlay.Uid = available && page != Page.Play && page != Page.Multiplayer ? "dot" : "";
-            NavPlay.ToolTip = NavPlay.Uid == "dot" ? latest.Title + " is out" : null;
+            NavPlay.ToolTip = NavPlay.Uid == "dot" ? latest.Title + " is out!" : null;
             MultiplayerLock.Visibility = HasMultiplayer ? Visibility.Collapsed : Visibility.Visible;
-            MultiplayerButton.ToolTip = HasMultiplayer ? null : "Multiplayer is coming soon";
+            MultiplayerButton.ToolTip = HasMultiplayer ? null : "Multiplayer is unavailable.";
             SingleplayerButton.Visibility = checkingFiles ? Visibility.Hidden : Visibility.Visible;
             MultiplayerButton.Visibility = checkingFiles ? Visibility.Hidden : Visibility.Visible;
             StatusLeft.Visibility = checkingFiles ? Visibility.Visible : Visibility.Collapsed;
